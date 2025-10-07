@@ -1,24 +1,41 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import AdmissionForm from './components/AdmissionForm';
+import ApplicationsList from './components/ApplicationsList';
 import './App.css';
+
+// Simple Welcome component that redirects to admission
+function Welcome() {
+  return (
+    <div className="welcome-container">
+      <div className="welcome-content">
+        <h1>🎓 University Admission System</h1>
+        <p>Welcome to our online student admission portal</p>
+        <div className="welcome-buttons">
+          <a href="/apply" className="welcome-btn primary">
+            Start Application
+          </a>
+          <a href="/applications" className="welcome-btn secondary">
+            View Applications
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/apply" element={<AdmissionForm />} />
+          <Route path="/applications" element={<ApplicationsList />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
