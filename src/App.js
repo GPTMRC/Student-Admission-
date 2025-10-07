@@ -29,10 +29,12 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          {/* Redirect root path directly to admission form */}
+          <Route path="/" element={<Navigate to="/apply" replace />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/apply" element={<AdmissionForm />} />
           <Route path="/applications" element={<ApplicationsList />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/apply" replace />} />
         </Routes>
       </div>
     </Router>
