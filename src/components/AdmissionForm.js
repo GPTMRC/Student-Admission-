@@ -7,23 +7,45 @@ import './AdmissionForm.css';
 const AdmissionForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    full_name: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
     email: '',
     birthday: '',
+    sex: '',
+    address: '',
+    contact_number: '',
+    emergency_contact_name: '',
+    emergency_contact_number: '',
+    junior_high_school: '',
+    senior_high_school: '',
+    desired_program: '',
     year_level: '',
+    student_type: 'New',             // ✅ Replaced transferee_status
+    last_school_attended: 'N/A',     // ✅ Default to N/A if not transferee
     picture_2x2: '',
     good_moral_cert: '',
     form_138: '',
     graduation_cert: ''
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+    if (name === 'student_type') {
+      setFormData(prev => ({
+        ...prev,
+        student_type: value,
+        last_school_attended: value === 'New' ? 'N/A' : ''
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleFileUpload = (fileType, fileUrl) => {
@@ -35,15 +57,15 @@ const AdmissionForm = () => {
 
   const sendEmailConfirmation = async (admissionData) => {
     try {
-      console.log('📧 Attempting to send email to:', admissionData.email);
-      
-      const response = await fetch('http://localhost:3002/api/send-exam-email', {  // ← CHANGED TO 3002
+      const studentName = `${admissionData.first_name} ${
+        admissionData.middle_name ? admissionData.middle_name + ' ' : ''
+      }${admissionData.last_name}`;
+
+      const response = await fetch('http://localhost:3002/api/send-exam-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          student_name: admissionData.full_name,
+          student_name: studentName,
           student_email: admissionData.email,
           exam_schedule: admissionData.exam_schedule,
           year_level: admissionData.year_level
@@ -51,15 +73,7 @@ const AdmissionForm = () => {
       });
 
       const result = await response.json();
-      console.log('Email API response:', result);
-      
-      if (result.success) {
-        console.log('✅ Email sent successfully:', result.messageId);
-        return true;
-      } else {
-        console.error('❌ Email API failed:', result.error);
-        return false;
-      }
+      return result.success;
     } catch (error) {
       console.error('❌ Email request failed:', error);
       return false;
@@ -69,8 +83,6 @@ const AdmissionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    console.log('📝 Form submission started...');
 
     const requiredFiles = ['picture_2x2', 'good_moral_cert', 'form_138', 'graduation_cert'];
     const missingFiles = requiredFiles.filter(fileType => !formData[fileType]);
@@ -85,16 +97,26 @@ const AdmissionForm = () => {
       const examSchedule = new Date();
       examSchedule.setDate(examSchedule.getDate() + 7);
 
-      console.log('💾 Saving to database...');
-      
       const { data, error } = await supabase
         .from('student_admissions')
         .insert([
           {
-            full_name: formData.full_name,
+            first_name: formData.first_name,
+            middle_name: formData.middle_name,
+            last_name: formData.last_name,
             email: formData.email,
             birthday: formData.birthday,
+            sex: formData.sex,
+            address: formData.address,
+            contact_number: formData.contact_number,
+            emergency_contact_name: formData.emergency_contact_name,
+            emergency_contact_number: formData.emergency_contact_number,
+            junior_high_school: formData.junior_high_school,
+            senior_high_school: formData.senior_high_school,
+            desired_program: formData.desired_program,
             year_level: formData.year_level,
+            student_type: formData.student_type,                    // ✅ replaced transferee_status
+            last_school_attended: formData.last_school_attended,    // ✅ matched DB
             picture_2x2: formData.picture_2x2,
             good_moral_cert: formData.good_moral_cert,
             form_138: formData.form_138,
@@ -108,34 +130,41 @@ const AdmissionForm = () => {
         console.error('❌ Database error:', error);
         alert('Error submitting application: ' + error.message);
       } else {
-        console.log('✅ Database save successful, sending email...');
-        
-        // Send email confirmation
         const emailSent = await sendEmailConfirmation({
           ...formData,
           exam_schedule: examSchedule.toISOString()
         });
-        
+
         if (emailSent) {
-          console.log('✅ Application and email successful!');
-          alert('Application submitted successfully! Exam schedule sent to your email.');
+          alert('✅ Application submitted successfully! Exam schedule sent to your email.');
         } else {
-          console.log('⚠️ Application saved but email failed');
-          alert('Application submitted successfully! But failed to send email. Please check your email inbox or contact admissions.');
+          alert('⚠️ Application submitted but email failed. Please check your inbox.');
         }
-        
-        // Reset form and redirect
+
+        // Reset form
         setFormData({
-          full_name: '',
+          first_name: '',
+          middle_name: '',
+          last_name: '',
           email: '',
           birthday: '',
+          sex: '',
+          address: '',
+          contact_number: '',
+          emergency_contact_name: '',
+          emergency_contact_number: '',
+          junior_high_school: '',
+          senior_high_school: '',
+          desired_program: '',
           year_level: '',
+          student_type: 'New',
+          last_school_attended: 'N/A',
           picture_2x2: '',
           good_moral_cert: '',
           form_138: '',
           graduation_cert: ''
         });
-        
+
         navigate('/applications');
       }
     } catch (error) {
@@ -160,53 +189,115 @@ const AdmissionForm = () => {
             <h3>Personal Information</h3>
             <div className="form-grid">
               <div className="form-group">
-                <label>Full Name *</label>
-                <input
-                  type="text"
-                  name="full_name"
-                  value={formData.full_name}
-                  onChange={handleInputChange}
-                  required
-                />
+                <label>First Name *</label>
+                <input type="text" name="first_name" value={formData.first_name} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Middle Name</label>
+                <input type="text" name="middle_name" value={formData.middle_name} onChange={handleInputChange} />
+              </div>
+
+              <div className="form-group">
+                <label>Last Name *</label>
+                <input type="text" name="last_name" value={formData.last_name} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Sex *</label>
+                <select name="sex" value={formData.sex} onChange={handleInputChange} required>
+                  <option value="">Select Sex</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
               </div>
 
               <div className="form-group">
                 <label>Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
               </div>
 
               <div className="form-group">
                 <label>Birthday *</label>
-                <input
-                  type="date"
-                  name="birthday"
-                  value={formData.birthday}
-                  onChange={handleInputChange}
-                  required
-                />
+                <input type="date" name="birthday" value={formData.birthday} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Address *</label>
+                <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Contact Number *</label>
+                <input type="tel" name="contact_number" value={formData.contact_number} onChange={handleInputChange} required />
+              </div>
+            </div>
+          </div>
+
+          {/* Emergency Contact Section */}
+          <div className="form-section">
+            <h3>Emergency Contact</h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Emergency Contact Name *</label>
+                <input type="text" name="emergency_contact_name" value={formData.emergency_contact_name} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group">
+                <label>Emergency Contact Number *</label>
+                <input type="tel" name="emergency_contact_number" value={formData.emergency_contact_number} onChange={handleInputChange} required />
+              </div>
+            </div>
+          </div>
+
+          {/* Educational Background Section */}
+          <div className="form-section">
+            <h3>Educational Background</h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Junior High School *</label>
+                <input type="text" name="junior_high_school" value={formData.junior_high_school} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Senior High School *</label>
+                <input type="text" name="senior_high_school" value={formData.senior_high_school} onChange={handleInputChange} required />
+              </div>
+
+              <div className="form-group">
+                <label>Desired Program *</label>
+                <input type="text" name="desired_program" value={formData.desired_program} onChange={handleInputChange} required />
               </div>
 
               <div className="form-group">
                 <label>Year Level *</label>
-                <select
-                  name="year_level"
-                  value={formData.year_level}
-                  onChange={handleInputChange}
-                  required
-                >
+                <select name="year_level" value={formData.year_level} onChange={handleInputChange} required>
                   <option value="">Select Year Level</option>
                   <option value="Freshman">Freshman</option>
-                  <option value="Sophomore">Sophomore</option>
-                  <option value="Junior">Junior</option>
-                  <option value="Senior">Senior</option>
+                  <option value="Transferee">Transferee</option>
                 </select>
               </div>
+
+              <div className="form-group">
+                <label>Student Type *</label>
+                <select name="student_type" value={formData.student_type} onChange={handleInputChange} required>
+                  <option value="New">New Student</option>
+                  <option value="Transferee">Transferee</option>
+                </select>
+              </div>
+
+              {formData.student_type === 'Transferee' && (
+                <div className="form-group">
+                  <label>Last School Attended *</label>
+                  <input
+                    type="text"
+                    name="last_school_attended"
+                    value={formData.last_school_attended}
+                    onChange={handleInputChange}
+                    required={formData.student_type === 'Transferee'}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -214,41 +305,10 @@ const AdmissionForm = () => {
           <div className="form-section">
             <h3>Required Documents</h3>
             <div className="file-uploads-grid">
-              <FileUpload
-                label="2x2 Picture"
-                fileType="picture_2x2"
-                accept="image/*"
-                onFileUpload={handleFileUpload}
-                currentFile={formData.picture_2x2}
-                required
-              />
-
-              <FileUpload
-                label="Certificate of Good Moral"
-                fileType="good_moral_cert"
-                accept=".pdf,.doc,.docx,image/*"
-                onFileUpload={handleFileUpload}
-                currentFile={formData.good_moral_cert}
-                required
-              />
-
-              <FileUpload
-                label="Form 138"
-                fileType="form_138"
-                accept=".pdf,.doc,.docx,image/*"
-                onFileUpload={handleFileUpload}
-                currentFile={formData.form_138}
-                required
-              />
-
-              <FileUpload
-                label="Certificate of Graduation"
-                fileType="graduation_cert"
-                accept=".pdf,.doc,.docx,image/*"
-                onFileUpload={handleFileUpload}
-                currentFile={formData.graduation_cert}
-                required
-              />
+              <FileUpload label="2x2 Picture" fileType="picture_2x2" accept="image/*" onFileUpload={handleFileUpload} currentFile={formData.picture_2x2} required />
+              <FileUpload label="Certificate of Good Moral" fileType="good_moral_cert" accept=".pdf,.doc,.docx,image/*" onFileUpload={handleFileUpload} currentFile={formData.good_moral_cert} required />
+              <FileUpload label="Form 138" fileType="form_138" accept=".pdf,.doc,.docx,image/*" onFileUpload={handleFileUpload} currentFile={formData.form_138} required />
+              <FileUpload label="Certificate of Graduation" fileType="graduation_cert" accept=".pdf,.doc,.docx,image/*" onFileUpload={handleFileUpload} currentFile={formData.graduation_cert} required />
             </div>
           </div>
 
