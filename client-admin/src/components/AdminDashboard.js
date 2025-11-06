@@ -205,11 +205,28 @@ const AdminDashboard = () => {
     );
   }
 
-  return (
+   return (
     <div className="admin-dashboard">
+      {/* UPDATED: Dashboard Header with Logo on Left */}
       <div className="dashboard-header">
-        <h1>📊 Admin Dashboard</h1>
-        <p>Manage student applications and exam schedules</p>
+        {/* Left Side: College Information with Logo */}
+        <div className="college-section">
+         <div className="logo-container large transparent-bg">
+          <img src="logo-ptc.png" alt="Logo" className="logo-image no-padding" />
+          </div>
+          <div className="college-info">
+            <h1 className="college-name">Pateros Technological College</h1>
+            <p className="dashboard-title">Admin Dashboard</p>
+          </div>
+        </div>
+
+        {/* Right Side: Admin Section */}
+        <div className="admin-section">
+          <div className="admin-info">
+            <div className="admin-name">Administrator</div>
+            <div className="admin-role">System Admin</div>
+          </div>
+        </div>
       </div>
 
       {/* Statistics Cards */}
