@@ -1,0 +1,26 @@
+2025-11-06T10:18:28.366Z INFO: 🚀 PTC Admission Email Server running on http://localhost:4000
+2025-11-06T10:18:28.367Z INFO: 📧 Using Gmail: baylonmark73@gmail.com
+2025-11-06T10:18:28.367Z INFO: 🏫 Sender Name: PTC ADMISSION
+2025-11-06T10:18:29.525Z INFO: ✅ SMTP transporter verified and ready
+2025-11-06T10:58:48.734Z INFO: 🚀 PTC Admission Email Server running on http://localhost:4000
+2025-11-06T10:58:48.735Z INFO: 📧 Using Gmail: baylonmark73@gmail.com
+2025-11-06T10:58:48.735Z INFO: 🏫 Sender Name: PTC Admission
+2025-11-06T10:58:49.373Z INFO: ✅ SMTP transporter verified and ready
+2025-11-06T11:00:35.311Z INFO: 🚀 PTC Admission Email Server running on http://localhost:4001
+2025-11-06T11:00:35.312Z INFO: 📧 Using Gmail: baylonmark73@gmail.com
+2025-11-06T11:00:35.313Z INFO: 🏫 Sender Name: PTC Admission
+2025-11-06T11:00:36.461Z INFO: ✅ SMTP transporter verified and ready
+2025-11-06T11:02:43.971Z INFO: Test email sent | meta: {"to":"baylonmark73@gmail.com","messageId":"<ddfac69f-5a8f-2343-6080-b062ba52ee0c@gmail.com>"}
+2025-11-06T11:06:05.476Z INFO: Saving application | meta: {"applicant":"John Doe","applicationId":"APP-1762427165476-zudsqgn0g"}
+2025-11-06T11:06:05.477Z INFO: Attempting to send confirmation email (submit-application) | meta: {"attempt":1,"to":"baylonmark73@gmail.com"}
+2025-11-06T11:06:06.670Z INFO: Confirmation email sent | meta: {"to":"baylonmark73@gmail.com","messageId":"<926da120-03e0-fc2c-3cd1-ecd765c13550@gmail.com>","attempt":1}
+2025-11-06T11:06:16.724Z INFO: Attempting send-confirmation email | meta: {"attempt":1,"to":"baylonmark73@gmail.com"}
+2025-11-06T11:06:17.823Z INFO: send-confirmation email sent | meta: {"to":"baylonmark73@gmail.com","messageId":"<c54b4c6a-0213-928d-a1c9-15a0a6cdaa9d@gmail.com>","attempt":1}
+2025-11-06T11:13:20.595Z INFO: Frontend connection test | meta: {"body":{"test":"frontend connection","timestamp":"2025-11-06T11:13:20.591Z"}}
+2025-11-06T11:13:21.089Z INFO: Attempting send-confirmation email | meta: {"attempt":1,"to":"raijinplays3@gmail.com"}
+2025-11-06T11:13:42.730Z ERROR: send-confirmation attempt failed read ECONNRESET | meta: {"attempt":1,"code":"ESOCKET"}
+2025-11-06T11:13:43.244Z INFO: Attempting send-confirmation email | meta: {"attempt":2,"to":"raijinplays3@gmail.com"}
+2025-11-06T11:13:45.465Z INFO: send-confirmation email sent | meta: {"to":"raijinplays3@gmail.com","messageId":"<f1701fda-e88c-7ff1-3ef2-6cfe5250cf32@gmail.com>","attempt":2}
+2025-11-06T11:45:35.901Z INFO: Frontend connection test | meta: {"body":{"test":"frontend connection","timestamp":"2025-11-06T11:45:35.900Z"}}
+2025-11-06T11:45:36.192Z INFO: Attempting send-confirmation email | meta: {"attempt":1,"to":"raijinplays3@gmail.com"}
+2025-11-06T11:45:38.264Z INFO: send-confirmation email sent | meta: {"to":"raijinplays3@gmail.com","messageId":"<55b528bb-c922-d45f-945b-a49df48dcc93@gmail.com>","attempt":1}

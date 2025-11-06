@@ -1,0 +1,14 @@
+﻿.App {
+  text-align: center;
+}
+/* App.css - Global styles */
+.App {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure AdmissionForm.css has full control */
+.admission-form-page {
+  margin: 0 !important;
+  padding: 0 !important;
+}
