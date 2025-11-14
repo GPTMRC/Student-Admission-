@@ -47,13 +47,12 @@ const AnimatedBackground = ({ children, particleCount = 50 }) => {
         <div className="welcome-content">
           <h1>University Admission System</h1>
           <p className="welcome-subtitle">
-            Streamline your application process with our intuitive platform. 
-            Get started today or check your existing applications.
+            Sign in with your school account to continue your journey
           </p>
           
           <div className="button-container">
             <Link to="/admission" className="action-btn primary-btn">
-              Start Application
+              Log in
             </Link>
           </div>
         </div>
