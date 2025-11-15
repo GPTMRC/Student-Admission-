@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -205,14 +205,14 @@ const AdminDashboard = () => {
     );
   }
 
-   return (
+    return (
     <div className="admin-dashboard">
-      {/* UPDATED: Dashboard Header with Logo on Left */}
+      {/* UPDATED: Dashboard Header with Logout */}
       <div className="dashboard-header">
         {/* Left Side: College Information with Logo */}
         <div className="college-section">
-         <div className="logo-container large transparent-bg">
-          <img src="logo-ptc.png" alt="Logo" className="logo-image no-padding" />
+          <div className="logo-container large transparent-bg">
+            <img src="logo-ptc.png" alt="Logo" className="logo-image no-padding" />
           </div>
           <div className="college-info">
             <h1 className="college-name">Pateros Technological College</h1>
@@ -220,15 +220,22 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Right Side: Admin Section */}
+        {/* Right Side: Admin Section with Logout */}
         <div className="admin-section">
           <div className="admin-info">
             <div className="admin-name">Administrator</div>
             <div className="admin-role">System Admin</div>
           </div>
+          <button 
+            onClick={onLogout}
+            className="logout-btn"
+            title="Logout"
+          >
+            🚪 Logout
+          </button>
         </div>
       </div>
-
+      
       {/* Statistics Cards */}
       <div className="stats-container">
         <div className="stat-card">
