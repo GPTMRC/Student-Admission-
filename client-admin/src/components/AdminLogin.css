@@ -1,52 +1,113 @@
+/* src/components/AdminLogin.css */
+
 .login-container {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  justify-content: center;
+  background: linear-gradient(125deg, #556B2F, #6B8E23, #9ACD32);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  gap: 3rem;
 }
 
-.login-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  padding: 40px;
+.duck-egg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 450px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Logo Section Styles */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.logo-container-large {
+  margin-bottom: 1.5rem;
+}
+
+.logo-image-large {
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  background: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-image-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.college-info-large {
+  color: white;
+}
+
+.college-name-large {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.institution-tagline {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  font-weight: 300;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Login Card Styles */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 30px;
-}
-
-.logo-container {
-  margin-bottom: 15px;
-}
-
-.logo-image {
-  height: 80px;
-  width: auto;
-}
-
-.college-name {
-  color: #2c3e50;
-  font-size: 1.5rem;
-  margin: 0 0 5px 0;
-  font-weight: 600;
+  margin-bottom: 2rem;
 }
 
 .login-title {
-  color: #7f8c8d;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
   font-size: 1rem;
-  margin: 0;
+  color: #718096;
+  font-weight: 500;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.2rem;
 }
 
 .form-group {
@@ -55,22 +116,25 @@
 }
 
 .form-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #2c3e50;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .form-group input {
-  padding: 12px 15px;
-  border: 2px solid #e1e8ed;
-  border-radius: 8px;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  background: white;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-group input:disabled {
@@ -79,15 +143,16 @@
 }
 
 .login-button {
-  background: #3498db;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,37 +160,54 @@
 }
 
 .login-button:hover:not(:disabled) {
-  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
 .login-button:disabled {
-  background: #bdc3c7;
+  opacity: 0.6;
   cursor: not-allowed;
-}
-
-.demo-login-button {
-  background: #95a5a6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
-}
-
-.demo-login-button:hover:not(:disabled) {
-  background: #7f8c8d;
+  transform: none;
 }
 
 .error-message {
-  background: #ffeaa7;
-  color: #d63031;
+  background: #fed7d7;
+  border: 1px solid #feb2b2;
+  color: #c53030;
   padding: 12px;
   border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.login-footer {
   text-align: center;
-  font-weight: 500;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+/* Button styles for additional actions */
+button[type="button"] {
+  background: #718096;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button[type="button"]:hover:not(:disabled) {
+  background: #4a5568;
+  transform: translateY(-1px);
+}
+
+button[type="button"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .loading-spinner-small {
@@ -142,23 +224,48 @@
   100% { transform: rotate(360deg); }
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ecf0f1;
-  color: #7f8c8d;
-  font-size: 0.8rem;
+/* Responsive design */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .logo-section {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .logo-image-large {
+    width: 150px;
+    height: 150px;
+  }
+
+  .college-name-large {
+    font-size: 1.8rem;
+  }
+
+  .institution-tagline {
+    font-size: 1rem;
+  }
+
+  .login-card {
+    padding: 2rem;
+  }
 }
 
-/* Responsive Design */
 @media (max-width: 480px) {
   .login-card {
-    padding: 30px 20px;
-    margin: 10px;
+    padding: 1.5rem;
+    margin: 0;
   }
   
-  .college-name {
-    font-size: 1.3rem;
+  .college-name-large {
+    font-size: 1.5rem;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
   }
 }

@@ -11,11 +11,17 @@ const AdminDashboard = ({ onLogout }) => {
   const [examTime, setExamTime] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSection, setActiveSection] = useState('applications'); // New state for active nav item
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // New state for sidebar
 
   useEffect(() => {
     console.log('🔄 AdminDashboard mounted - starting fetchApplications');
     fetchApplications();
   }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };  
 
   const fetchApplications = async () => {
     try {
@@ -196,6 +202,16 @@ const AdminDashboard = ({ onLogout }) => {
     });
   };
 
+  // Navigation items
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'applications', label: 'Applications', icon: '📝' },
+    { id: 'students', label: 'Students', icon: '👨‍🎓' },
+    { id: 'exams', label: 'Exams', icon: '📚' },
+    { id: 'reports', label: 'Reports', icon: '📈' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' }
+  ];
+
   if (loading) {
     return (
       <div className="admin-dashboard-loading">
@@ -205,162 +221,206 @@ const AdminDashboard = ({ onLogout }) => {
     );
   }
 
-    return (
+return (
     <div className="admin-dashboard">
-      {/* UPDATED: Dashboard Header with Logout */}
-      <div className="dashboard-header">
-        {/* Left Side: College Information with Logo */}
-        <div className="college-section">
-          <div className="logo-container large transparent-bg">
-            <img src="logo-ptc.png" alt="Logo" className="logo-image no-padding" />
+      {/* Navigation Sidebar */}
+      <div className={`dashboard-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <img src="logo-ptc.png" alt="PTC Logo" />
           </div>
-          <div className="college-info">
-            <h1 className="college-name">Pateros Technological College</h1>
-            <p className="dashboard-title">Admin Dashboard</p>
-          </div>
-        </div>
-
-        {/* Right Side: Admin Section with Logout */}
-        <div className="admin-section">
-          <div className="admin-info">
-            <div className="admin-name">Administrator</div>
-            <div className="admin-role">System Admin</div>
-          </div>
-          <button 
-            onClick={onLogout}
-            className="logout-btn"
-            title="Logout"
-          >
-            🚪 Logout
-          </button>
-        </div>
-      </div>
-      
-      {/* Statistics Cards */}
-      <div className="stats-container">
-        <div className="stat-card">
-          <h3>Total Applications</h3>
-          <div className="stat-number">{applications.length}</div>
-        </div>
-        <div className="stat-card">
-          <h3>Scheduled Exams</h3>
-          <div className="stat-number">
-            {applications.filter(app => app.status === 'scheduled').length}
-          </div>
-        </div>
-        <div className="stat-card">
-          <h3>Pending Review</h3>
-          <div className="stat-number">
-            {applications.filter(app => !app.status || app.status === 'submitted').length}
-          </div>
-        </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="dashboard-controls">
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="Search by name or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <span className="search-icon">🔍</span>
+          {isSidebarOpen && <h3>PTC Admin</h3>}
         </div>
         
-        <div className="filter-controls">
-          <select 
-            value={filterStatus} 
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="submitted">Submitted</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="completed">Completed</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          
-          <button onClick={fetchApplications} className="refresh-btn">
-            🔄 Refresh
+        <nav className="sidebar-nav">
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+              onClick={() => setActiveSection(item.id)}
+              title={item.label}
+            >
+              <span className="nav-icon">{item.icon}</span>
+              {isSidebarOpen && <span className="nav-label">{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+        
+        <div className="sidebar-footer">
+          <button className="nav-item logout-nav" onClick={onLogout} title="Logout">
+            <span className="nav-icon">🚪</span>
+            {isSidebarOpen && <span className="nav-label">Logout</span>}
           </button>
         </div>
+
+        {/* Toggle Button */}
+        <button className="sidebar-toggle" onClick={toggleSidebar}>
+          <span className="toggle-icon">
+            {isSidebarOpen ? '◀' : '▶'}
+          </span>
+        </button>
       </div>
 
-      {/* Applications Table */}
-      <div className="applications-table-container">
-        <table className="applications-table">
-          <thead>
-            <tr>
-              <th>Student Name</th>
-              <th>Email</th>
-              <th>Program</th>
-              <th>Year Level</th>
-              <th>Submitted Date</th>
-              <th>Exam Schedule</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredApplications.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="no-data">
-                  No applications found
-                </td>
-              </tr>
-            ) : (
-              filteredApplications.map((application) => (
-                <tr key={application.id}>
-                  <td>
-                    <strong>{application.first_name} {application.last_name}</strong>
-                  </td>
-                  <td>{application.email}</td>
-                  <td>{application.desired_program}</td>
-                  <td>{application.year_level}</td>
-                  <td>{formatDate(application.submitted_at)}</td>
-                  <td>
-                    {application.exam_schedule ? (
-                      formatDate(application.exam_schedule)
+      {/* Main Content Area */}
+      <div className="dashboard-main">
+        {/* Dashboard Header */}
+        <div className="dashboard-header">
+          <div className="header-content">
+            <div className="header-left">
+              <button className="mobile-menu-btn" onClick={toggleSidebar}>
+                <span className="menu-icon">☰</span>
+              </button>
+              <h1 className="page-title">
+                {navItems.find(item => item.id === activeSection)?.label || 'Dashboard'}
+              </h1>
+            </div>
+            <div className="admin-info">
+              <div className="admin-welcome">Welcome, Administrator</div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Main Content */}
+        <div className="dashboard-content">
+          {activeSection === 'applications' && (
+            <>
+              {/* Statistics Cards */}
+              <div className="stats-container">
+                <div className="stat-card">
+                  <h3>Total Applications</h3>
+                  <div className="stat-number">{applications.length}</div>
+                </div>
+                <div className="stat-card">
+                  <h3>Scheduled Exams</h3>
+                  <div className="stat-number">
+                    {applications.filter(app => app.status === 'scheduled').length}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <h3>Pending Review</h3>
+                  <div className="stat-number">
+                    {applications.filter(app => !app.status || app.status === 'submitted').length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters and Search */}
+              <div className="dashboard-controls">
+                <div className="search-box">
+                  <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <span className="search-icon">🔍</span>
+                </div>
+                
+                <div className="filter-controls">
+                  <select 
+                    value={filterStatus} 
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="submitted">Submitted</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                  
+                  <button onClick={fetchApplications} className="refresh-btn">
+                    🔄 Refresh
+                  </button>
+                </div>
+              </div>
+
+              {/* Applications Table */}
+              <div className="applications-table-container">
+                <table className="applications-table">
+                  <thead>
+                    <tr>
+                      <th>Student Name</th>
+                      <th>Email</th>
+                      <th>Program</th>
+                      <th>Year Level</th>
+                      <th>Submitted Date</th>
+                      <th>Exam Schedule</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredApplications.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="no-data">
+                          No applications found
+                        </td>
+                      </tr>
                     ) : (
-                      <span className="not-scheduled">Not Scheduled</span>
+                      filteredApplications.map((application) => (
+                        <tr key={application.id}>
+                          <td>
+                            <strong>{application.first_name} {application.last_name}</strong>
+                          </td>
+                          <td>{application.email}</td>
+                          <td>{application.desired_program}</td>
+                          <td>{application.year_level}</td>
+                          <td>{formatDate(application.submitted_at)}</td>
+                          <td>
+                            {application.exam_schedule ? (
+                              formatDate(application.exam_schedule)
+                            ) : (
+                              <span className="not-scheduled">Not Scheduled</span>
+                            )}
+                          </td>
+                          <td>{getStatusBadge(application.status)}</td>
+                          <td>
+                            <div className="action-buttons">
+                              <button
+                                onClick={() => handleScheduleExam(application)}
+                                className="btn-schedule"
+                                title="Schedule Exam"
+                              >
+                                🗓️ Schedule
+                              </button>
+                              
+                              <select
+                                value={application.status || 'submitted'}
+                                onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
+                                className="status-select"
+                              >
+                                <option value="submitted">Submitted</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="completed">Completed</option>
+                                <option value="rejected">Rejected</option>
+                              </select>
+                              
+                              <button
+                                onClick={() => deleteApplication(application.id)}
+                                className="btn-delete"
+                                title="Delete Application"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
                     )}
-                  </td>
-                  <td>{getStatusBadge(application.status)}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        onClick={() => handleScheduleExam(application)}
-                        className="btn-schedule"
-                        title="Schedule Exam"
-                      >
-                        🗓️ Schedule
-                      </button>
-                      
-                      <select
-                        value={application.status || 'submitted'}
-                        onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
-                        className="status-select"
-                      >
-                        <option value="submitted">Submitted</option>
-                        <option value="scheduled">Scheduled</option>
-                        <option value="completed">Completed</option>
-                        <option value="rejected">Rejected</option>
-                      </select>
-                      
-                      <button
-                        onClick={() => deleteApplication(application.id)}
-                        className="btn-delete"
-                        title="Delete Application"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {/* Placeholder for other sections */}
+          {activeSection !== 'applications' && (
+            <div className="section-placeholder">
+              <h2>{navItems.find(item => item.id === activeSection)?.label} Section</h2>
+              <p>This section is under development. The {activeSection} functionality will be implemented here.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Schedule Exam Modal */}
