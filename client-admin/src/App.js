@@ -1,73 +1,38 @@
-﻿import React, { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+﻿// src/App.jsx
+import React, { useState } from 'react';
 import AdminLogin from './components/AdminLogin';
-import AdminDashboard from './components/AdminDashboard';
+import AdminDashboard from './components/AdminDashboard'; // Import your actual dashboard
 import './App.css';
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [admin, setAdmin] = useState(null);
 
-useEffect(() => {
-  // Force logout on app start for testing
-  const forceLogout = async () => {
-    await supabase.auth.signOut();
-    setLoading(false);
-  };
-  forceLogout();
-}, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        console.log('✅ User already logged in');
-        setIsAuthenticated(true);
-      } else {
-        console.log('🔐 No active session');
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('❌ Auth check error:', error);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
+  const handleLoginSuccess = (data) => {
+    console.log('✅ App: Login successful with data:', data);
+    setUser(data.user);
+    setAdmin(data.admin);
   };
 
-  const handleLoginSuccess = () => {
-    console.log('✅ Login successful');
-    setIsAuthenticated(true);
+  const handleLogout = () => {
+    console.log('🚪 App: Logging out');
+    setUser(null);
+    setAdmin(null);
   };
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+  console.log('🔄 App: Current state - user:', user ? 'logged in' : 'null', 'admin:', admin ? 'exists' : 'null');
 
-  if (loading) {
+  // Show AdminDashboard when both user and admin exist
+  if (user && admin) {
     return (
-      <div className="app-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
-      </div>
+      <AdminDashboard 
+        user={user} 
+        admin={admin} 
+        onLogout={handleLogout} 
+      />
     );
   }
 
-  return (
-    <div className="App">
-      {isAuthenticated ? (
-        <AdminDashboard onLogout={handleLogout} />
-      ) : (
-        <AdminLogin onLoginSuccess={handleLoginSuccess} />
-      )}
-    </div>
-  );
+  // Show AdminLogin when not logged in
+  return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
 }
-
-export default App;
