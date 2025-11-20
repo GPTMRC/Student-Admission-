@@ -1,68 +1,56 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './AnimatedBackground.css';
 
-const AnimatedBackground = ({ children, particleCount = 50 }) => {
-  const particlesRef = useRef(null);
-
-  useEffect(() => {
-    createParticles();
-  }, [particleCount]);
-
-  const createParticles = () => {
-    const particlesContainer = particlesRef.current;
-    if (!particlesContainer) return;
-
-    particlesContainer.innerHTML = '';
-
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.classList.add('particle');
-      
-      const size = Math.random() * 6 + 2;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${Math.random() * 100}%`;
-      particle.style.bottom = `-${size}px`;
-      const duration = Math.random() * 15 + 10;
-      particle.style.animationDuration = `${duration}s`;
-      const delay = Math.random() * 5;
-      particle.style.animationDelay = `${delay}s`;
-      
-      particlesContainer.appendChild(particle);
-    }
-  };
-
+const AnimatedBackground = ({ children }) => {
   return (
     <div className="animated-background-container">
-      <div className="background">
-        <div className="particles" ref={particlesRef}></div>
-      </div>
+      <div className="background"></div>
       
       <div className="content">
-        <div className="logo-space">
-             <img src="/logo-ptc.png" alt="PTC LOGO" className="logo" />
-        </div>
+        <div className="main-content-wrapper">
+          {/* Left Side - Welcome Content */}
+          <div className="welcome-section">
+            <div className="logo-space">
+              <img src="/logo-ptc.png" alt="PTC LOGO" className="logo" />
+            </div>
 
-        <div className="welcome-content">
-          <h1>Pateros Technological College</h1>
-          <p className="welcome-subtitle">
-            Student Portal - Institutional Access Required
-          </p>
-          
-          <div className="button-container">
-            <Link to="/login" className="action-btn primary-btn">
-              Student Login
-            </Link>
+            <div className="welcome-content">
+              <h1>Pateros Technological College</h1>
+              
+              <div className="main-description">
+                <p>Access your academic information, course materials, and institutional resources through our secure student portal.</p>
+              </div>
+              
+              <div className="button-container">
+                <Link to="/login" className="action-btn primary-btn">
+                  Student Login
+                </Link>
+              </div>
+            </div>
           </div>
-          
-          <div className="login-info">
-            <p><strong>Access Requirements:</strong></p>
-            <ul>
-              <li>PTC Institutional Email Account</li>
-              <li>Valid Student Credentials</li>
-              <li>Active Enrollment Status</li>
-            </ul>
+
+          {/* Right Side - Info Card */}
+          <div className="info-card-section">
+            <div className="info-card">
+              <div className="info-card-content">
+                <h2>Campus Announcements</h2>
+                <div className="announcement-list">
+                  <div className="announcement-item">
+                    <h3>Enrollment Period</h3>
+                    <p>Next semester enrollment starts on January 15, 2024. Prepare your documents early.</p>
+                  </div>
+                  <div className="announcement-item">
+                    <h3>Academic Calendar</h3>
+                    <p>Check the updated academic calendar for important dates and deadlines.</p>
+                  </div>
+                  <div className="announcement-item">
+                    <h3>System Maintenance</h3>
+                    <p>Portal will be unavailable on Sunday, 2:00 AM - 6:00 AM for system updates.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom'; // ADD THIS IMPORT
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = ({ setIsAuthenticated, setStudentData }) => {
@@ -10,7 +10,7 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // ADD THIS
+  const navigate = useNavigate();
 
   // STRICT PTC institutional email validation
   const isValidPTCEmail = (email) => {
@@ -77,55 +77,129 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
 
   return (
     <div className="login-container">
-      <div className="login-form">
-        <div className="login-header">
-          <img src="/logo-ptc.png" alt="PTC Logo" className="ptc-logo" />
-          <h1>Pateros Technological College</h1>
-          <p>Student Portal - Port 3003</p>
-          <div className="allowed-domains strict">
-            <strong>DEBUG:</strong> Should redirect to /dashboard after login
+      <div className="main-content-wrapper">
+        {/* Left Side - Login Form */}
+        <div className="login-section">
+          <div className="login-form-card">
+            <div className="logo-space">
+              <img src="/logo-ptc.png" alt="PTC LOGO" className="logo" />
+            </div>
+
+            <div className="login-content">
+              <h1>Student Login</h1>
+              <p className="login-subtitle">
+                Pateros Technological College
+              </p>
+              
+              <form onSubmit={handleLogin} className="login-form">
+                <div className="form-group">
+                  <input
+                    type="email"
+                    placeholder="juan.delacruz@paterostechnologicalcollege.edu.ph"
+                    value={credentials.institutional_email}
+                    onChange={(e) => setCredentials({...credentials, institutional_email: e.target.value})}
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <input
+                    type="password"
+                    placeholder="Enter your password"
+                    value={credentials.password}
+                    onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                    required
+                  />
+                </div>
+                
+                {error && (
+                  <div className="error-message">
+                    {error}
+                  </div>
+                )}
+                
+                <button type="submit" disabled={loading} className="login-btn primary-btn">
+                  {loading ? (
+                    <>
+                      <div className="loading-spinner-small"></div>
+                      Logging in...
+                    </>
+                  ) : (
+                    'Sign In to Dashboard'
+                  )}
+                </button>
+              </form>
+
+              <div className="test-credentials">
+                <p><strong>Test Login:</strong></p>
+                <p><strong>Email:</strong> juan.delacruz@paterostechnologicalcollege.edu.ph</p>
+                <p><strong>Password:</strong> welcome123</p>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label>PTC Institutional Email</label>
-            <input
-              type="email"
-              placeholder="juan.delacruz@paterostechnologicalcollege.edu.ph"
-              value={credentials.institutional_email}
-              onChange={(e) => setCredentials({...credentials, institutional_email: e.target.value})}
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="welcome123"
-              value={credentials.password}
-              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-              required
-            />
-          </div>
-          
-          {error && (
-            <div className="error-message">
-              <strong>Error:</strong> {error}
+
+        {/* Right Side - Access Requirements Card */}
+        <div className="info-card-section">
+          <div className="info-card">
+            <div className="info-card-content">
+              <h2>Access Requirements</h2>
+              <div className="requirements-list">
+                <div className="requirement-item">
+                  <div className="requirement-icon">📧</div>
+                  <div className="requirement-text">
+                    <h3>PTC Institutional Email</h3>
+                    <p>Valid @paterostechnologicalcollege.edu.ph email address required for authentication.</p>
+                  </div>
+                </div>
+                <div className="requirement-item">
+                  <div className="requirement-icon">🎓</div>
+                  <div className="requirement-text">
+                    <h3>Active Enrollment Status</h3>
+                    <p>Must be currently enrolled in the current academic semester.</p>
+                  </div>
+                </div>
+                <div className="requirement-item">
+                  <div className="requirement-icon">🔑</div>
+                  <div className="requirement-text">
+                    <h3>Valid Credentials</h3>
+                    <p>Official student ID and proper login credentials provided by the institution.</p>
+                  </div>
+                </div>
+                <div className="requirement-item">
+                  <div className="requirement-icon">📱</div>
+                  <div className="requirement-text">
+                    <h3>Secure Connection</h3>
+                    <p>Access from authorized networks and devices only. Public networks are restricted.</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-          
-          <button type="submit" disabled={loading} className="login-btn">
-            {loading ? 'Logging in...' : 'Login & Go to Dashboard'}
-          </button>
-        </form>
-        
-        <div className="test-credentials">
-          <h4>Test Login:</h4>
-          <p><strong>Email:</strong> juan.delacruz@paterostechnologicalcollege.edu.ph</p>
-          <p><strong>Password:</strong> welcome123</p>
-          <p><strong>Expected:</strong> Redirect to http://localhost:3003/dashboard</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Need Help Footer */}
+      <div className="help-footer">
+        <div className="help-footer-content">
+          <div className="help-info">
+            <h3>Need Help?</h3>
+            <p>Contact MIS Office for account issues or technical support during office hours.</p>
+          </div>
+          <div className="contact-details">
+            <div className="contact-item">
+              <span className="contact-icon">📧</span>
+              <span>mis@paterostechnologicalcollege.edu.ph</span>
+            </div>
+            <div className="contact-item">
+              <span className="contact-icon">📞</span>
+              <span>(02) 8642-1234</span>
+            </div>
+            <div className="contact-item">
+              <span className="contact-icon">🕒</span>
+              <span>Mon-Fri: 8:00 AM - 5:00 PM</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
