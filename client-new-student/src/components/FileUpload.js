@@ -7,15 +7,16 @@ const FileUpload = ({
   accept, 
   onFileUpload, 
   currentFile,
+  error,
   required 
 }) => {
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (file) => {
     try {
       setUploading(true);
 
-      const file = event.target.files[0];
       if (!file) return;
 
       // Validate file size (max 5MB)
@@ -55,7 +56,33 @@ const FileUpload = ({
       alert(`Error uploading ${label}: ${error.message}`);
     } finally {
       setUploading(false);
-      event.target.value = '';
+    }
+  };
+
+  const handleInputChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      await handleFileUpload(file);
+    }
+    event.target.value = '';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      await handleFileUpload(file);
     }
   };
 
@@ -63,47 +90,125 @@ const FileUpload = ({
     onFileUpload(fileType, '');
   };
 
+  const getFileIcon = (fileName) => {
+    if (!fileName) return '📎';
+    if (fileName.includes('.pdf')) return '📄';
+    if (fileName.includes('.doc') || fileName.includes('.docx')) return '📝';
+    if (fileName.includes('.jpg') || fileName.includes('.png') || fileName.includes('.jpeg') || fileName.includes('.gif')) return '🖼️';
+    return '📎';
+  };
+
+  const getFileNameFromUrl = (url) => {
+    if (!url) return 'Uploaded file';
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      return pathname.split('/').pop() || 'Uploaded file';
+    } catch {
+      return 'Uploaded file';
+    }
+  };
+
   return (
-    <div className="file-upload-group">
-      <label className="file-upload-label">
-        {label} {required && <span className="required">*</span>}
-      </label>
-      
-      <div className="file-upload-container">
-        {!currentFile ? (
-          <div className="file-upload-area">
-            <input
-              type="file"
-              onChange={handleFileUpload}
-              disabled={uploading}
-              accept={accept}
-              className="file-input"
-            />
-            <div className="upload-placeholder">
-              {uploading ? 'Uploading...' : `Click to upload ${label}`}
-            </div>
+    <div className="document-card">
+      <div className="document-card-header">
+        <div className="document-card-label">
+          {label}
+          {required && <span className="required">*</span>}
+        </div>
+        <div className={`document-status ${currentFile ? 'uploaded' : 'missing'}`}>
+          {currentFile ? 'Uploaded' : 'Required'}
+        </div>
+      </div>
+
+      {!currentFile ? (
+        <div
+          className={`file-upload-area ${isDragging ? 'dragover' : ''} ${error ? 'error' : ''}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById(`file-input-${fileType}`).click()}
+        >
+          <div className="upload-icon">
+            {uploading ? '⏳' : '📤'}
           </div>
-        ) : (
-          <div className="file-preview">
-            <span className="file-name">✅ File uploaded successfully</span>
+          <div className="upload-text">
+            {uploading ? 'Uploading...' : (isDragging ? 'Drop file here' : `Click or drag to upload ${label}`)}
+          </div>
+          <div className="upload-hint">
+            {accept.includes('image/*') ? 'Supports: JPG, PNG, GIF' : 'Supports: PDF, Word, Images'} • Max 5MB
+          </div>
+          <input
+            id={`file-input-${fileType}`}
+            type="file"
+            accept={accept}
+            onChange={handleInputChange}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
+        </div>
+      ) : (
+        <div className="uploaded-file">
+          <div className="file-info">
+            <span className="file-icon">{getFileIcon(currentFile)}</span>
+            <span className="file-name" title={getFileNameFromUrl(currentFile)}>
+              {getFileNameFromUrl(currentFile)}
+            </span>
+          </div>
+          <div className="file-actions">
             <button 
               type="button" 
-              onClick={removeFile}
-              className="remove-file-btn"
+              className="btn-icon" 
+              onClick={() => document.getElementById(`file-input-${fileType}`).click()}
+              disabled={uploading}
+              title="Replace file"
             >
-              Remove
+              🔄
             </button>
             <a 
               href={currentFile} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="view-file-btn"
+              className="btn-icon"
+              title="View file"
             >
-              View
+              👁️
             </a>
+            <button 
+              type="button" 
+              className="btn-icon" 
+              onClick={removeFile}
+              disabled={uploading}
+              title="Remove file"
+            >
+              🗑️
+            </button>
           </div>
-        )}
-      </div>
+          <input
+            id={`file-input-${fileType}`}
+            type="file"
+            accept={accept}
+            onChange={handleInputChange}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
+        </div>
+      )}
+
+      {error && !currentFile && (
+        <div className="error-text">
+          ⚠ {error}
+        </div>
+      )}
+
+      {uploading && (
+        <div className="upload-progress">
+          <div className="progress-bar">
+            <div className="progress-fill"></div>
+          </div>
+          <div className="progress-text">Uploading...</div>
+        </div>
+      )}
     </div>
   );
 };
