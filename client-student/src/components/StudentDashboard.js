@@ -10,6 +10,7 @@ const StudentDashboard = ({ studentData }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleLogout = () => {
     navigate('/login');
@@ -26,14 +27,10 @@ const StudentDashboard = ({ studentData }) => {
     setUnreadCount(mockNotifications.filter(n => !n.read).length);
   }, []);
 
-  if (!studentData) {
-    return React.createElement(
-      'div',
-      { className: 'loading-dashboard' },
-      React.createElement('div', { className: 'loading-spinner' }),
-      React.createElement('p', null, 'Loading student data...')
-    );
-  }
+  // Fix: Handle COR navigation properly
+  const handleCORNavigation = () => {
+    setActiveSection('cor');
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -54,570 +51,401 @@ const StudentDashboard = ({ studentData }) => {
     setActiveSection('dashboard');
   };
 
-  // Navigation items - UPDATED WITH COR GENERATOR
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  if (!studentData) {
+    return (
+      <div className="loading-dashboard">
+        <div className="loading-spinner"></div>
+        <p>Loading student data...</p>
+      </div>
+    );
+  }
+
+  // Navigation items - FIXED: Use proper React components
   const navItems = [
     { 
       id: 'dashboard', 
       icon: '📊', 
       label: 'Dashboard', 
-      component: React.createElement(DashboardHome, { studentData: studentData }) 
+      component: <DashboardHome studentData={studentData} onCORNavigate={handleCORNavigation} />
     },
     { 
       id: 'academics', 
       icon: '📚', 
       label: 'Academic Records', 
-      component: React.createElement(AcademicSection, { studentData: studentData }) 
+      component: <AcademicSection studentData={studentData} />
     },
     { 
       id: 'documents', 
       icon: '📄', 
       label: 'Online Documents', 
-      component: React.createElement(DocumentsSection, { studentData: studentData }) 
+      component: <DocumentsSection studentData={studentData} />
     },
     { 
       id: 'cor', 
       icon: '🎓', 
       label: 'COR Generator', 
-      component: React.createElement(CertificateOfRegistration, { 
-        studentData: studentData,
-        onClose: handleCloseCOR
-      }) 
+      component: <CertificateOfRegistration studentData={studentData} onClose={handleCloseCOR} />
     },
     { 
       id: 'scheduler', 
       icon: '📅', 
       label: 'Request Scheduler', 
-      component: React.createElement(SchedulerSection) 
+      component: <SchedulerSection />
     },
     { 
       id: 'applications', 
       icon: '📋', 
       label: 'Applications', 
-      component: React.createElement(ApplicationsSection) 
+      component: <ApplicationsSection />
     },
     { 
       id: 'profile', 
       icon: '👤', 
       label: 'My Profile', 
-      component: React.createElement(ProfileSection, { studentData: studentData }) 
+      component: <ProfileSection studentData={studentData} />
     },
     { 
       id: 'settings', 
       icon: '⚙️', 
       label: 'Account Settings', 
-      component: React.createElement(SettingsSection, { darkMode: darkMode, toggleDarkMode: toggleDarkMode }) 
+      component: <SettingsSection darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
     },
     { 
       id: 'resources', 
       icon: '🏛️', 
       label: 'Campus Resources', 
-      component: React.createElement(ResourcesSection) 
+      component: <ResourcesSection />
     },
   ];
 
   const activeComponent = navItems.find(item => item.id === activeSection)?.component;
 
-  return React.createElement(
-    'div',
-    { 
-      className: `student-dashboard ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'} ${darkMode ? 'dark-mode' : ''}` 
-    },
-    // Sidebar Navigation
-    React.createElement(
-      'div',
-      { className: 'sidebar' },
-      React.createElement(
-        'div',
-        { className: 'sidebar-header' },
-        React.createElement(
-          'div',
-          { className: 'logo-section' },
-          React.createElement('img', { 
-            src: '/logo-ptc.png', 
-            alt: 'PTC Logo', 
-            className: 'sidebar-logo' 
-          }),
-          React.createElement('span', { className: 'college-name' }, 'Pateros Technological College')
-        ),
-        React.createElement(
-          'button',
-          { 
-            className: 'sidebar-toggle', 
-            onClick: toggleSidebar 
-          },
-          sidebarOpen ? '◀' : '▶'
-        )
-      ),
-      React.createElement(
-        'nav',
-        { className: 'sidebar-nav' },
-        navItems.map(item => {
-          const isApplications = item.id === 'applications';
-          const buttonContent = [
-            React.createElement('span', { key: 'icon', className: 'nav-icon' }, item.icon),
-            sidebarOpen && React.createElement('span', { key: 'label', className: 'nav-label' }, item.label),
-            isApplications && unreadCount > 0 && React.createElement('span', { key: 'badge', className: 'notification-badge' }, unreadCount)
-          ].filter(Boolean);
+  return (
+    <div className={`student-dashboard ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'} ${darkMode ? 'dark-mode' : ''}`}>
+      {/* Sidebar Navigation */}
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <div className="logo-section">
+            <img src="/logo-ptc.png" alt="PTC Logo" className="sidebar-logo" />
+            {sidebarOpen && <span className="college-name">Pateros Technological College</span>}
+          </div>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>
+            {sidebarOpen ? '◀' : '▶'}
+          </button>
+        </div>
 
-          return React.createElement(
-            'button',
-            {
-              key: item.id,
-              className: `nav-item ${activeSection === item.id ? 'active' : ''}`,
-              onClick: () => setActiveSection(item.id)
-            },
-            buttonContent
-          );
-        })
-      ),
-      React.createElement(
-        'div',
-        { className: 'sidebar-footer' },
-        React.createElement(
-          'div',
-          { className: 'user-info' },
-          React.createElement(
-            'div',
-            { className: 'user-avatar' },
-            studentData.first_name[0] + studentData.last_name[0]
-          ),
-          sidebarOpen && React.createElement(
-            'div',
-            { className: 'user-details' },
-            React.createElement('div', { className: 'user-name' }, studentData.first_name + ' ' + studentData.last_name),
-            React.createElement('div', { className: 'user-id' }, studentData.student_number)
-          )
-        ),
-        React.createElement(
-          'button',
-          { className: 'logout-btn', onClick: handleLogout },
-          React.createElement('span', { className: 'logout-icon' }, '🚪'),
-          sidebarOpen && 'Logout'
-        )
-      )
-    ),
-    // Main Content
-    React.createElement(
-      'div',
-      { className: 'main-content' },
-      React.createElement(
-        'header',
-        { className: 'content-header' },
-        React.createElement(
-          'div',
-          { className: 'header-left' },
-          React.createElement(
-            'div',
-            { className: 'breadcrumb' },
-            React.createElement('span', null, 'Dashboard'),
-            React.createElement('span', { className: 'breadcrumb-separator' }, '/'),
-            React.createElement('span', { className: 'breadcrumb-current' }, 
-              navItems.find(item => item.id === activeSection)?.label || 'Dashboard'
-            )
-          ),
-          React.createElement(
-            'h1',
-            null,
-            navItems.find(item => item.id === activeSection)?.label || 'Dashboard'
-          ),
-          React.createElement('p', null, 'Welcome back, ' + studentData.first_name + '!')
-        ),
-        React.createElement(
-          'div',
-          { className: 'header-right' },
-          React.createElement(
-            'div',
-            { className: 'header-actions' },
-            React.createElement(
-              'div',
-              { className: 'search-box' },
-              React.createElement('input', { 
-                type: 'text', 
-                placeholder: 'Search...', 
-                className: 'search-input' 
-              }),
-              React.createElement('span', { className: 'search-icon' }, '🔍')
-            ),
-            React.createElement(
-              'div',
-              { className: 'notification-wrapper' },
-              React.createElement(
-                'button',
-                { className: 'icon-btn notification-btn' },
-                React.createElement('span', { className: 'icon' }, '🔔'),
-                unreadCount > 0 && React.createElement('span', { className: 'notification-indicator' }, unreadCount)
-              ),
-              React.createElement(
-                'div',
-                { className: 'notification-dropdown' },
-                React.createElement(
-                  'div',
-                  { className: 'notification-header' },
-                  React.createElement('h3', null, 'Notifications'),
-                  React.createElement(
-                    'button',
-                    { 
-                      className: 'mark-read-btn', 
-                      onClick: markAllAsRead 
-                    },
-                    'Mark all as read'
-                  )
-                ),
-                React.createElement(
-                  'div',
-                  { className: 'notification-list' },
-                  notifications.map(notification => 
-                    React.createElement(
-                      'div',
-                      { 
-                        key: notification.id, 
-                        className: `notification-item ${notification.read ? 'read' : 'unread'}` 
-                      },
-                      React.createElement(
-                        'div',
-                        { className: 'notification-icon' },
-                        notification.type === 'academic' ? '📚' : '⚙️'
-                      ),
-                      React.createElement(
-                        'div',
-                        { className: 'notification-content' },
-                        React.createElement('div', { className: 'notification-title' }, notification.title),
-                        React.createElement('div', { className: 'notification-message' }, notification.message),
-                        React.createElement('div', { className: 'notification-time' }, notification.timestamp)
-                      )
-                    )
-                  )
-                )
-              )
-            ),
-            React.createElement(
-              'button',
-              { 
-                className: 'theme-toggle icon-btn', 
-                onClick: toggleDarkMode 
-              },
-              React.createElement('span', { className: 'icon' }, darkMode ? '☀️' : '🌙')
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'quick-stats' },
-            React.createElement(
-              'div',
-              { className: 'stat-item' },
-              React.createElement('span', { className: 'stat-label' }, 'Program'),
-              React.createElement('span', { className: 'stat-value' }, studentData.program_enrolled)
-            ),
-            React.createElement(
-              'div',
-              { className: 'stat-item' },
-              React.createElement('span', { className: 'stat-label' }, 'Year Level'),
-              React.createElement('span', { className: 'stat-value' }, studentData.year_level)
-            ),
-            React.createElement(
-              'div',
-              { className: 'stat-item' },
-              React.createElement('span', { className: 'stat-label' }, 'Status'),
-              React.createElement(
-                'span',
-                { 
-                  className: `status-badge ${studentData.enrollment_status === 'Active' ? 'active' : 'inactive'}` 
-                },
-                studentData.enrollment_status
-              )
-            )
-          )
-        )
-      ),
-      React.createElement(
-        'main',
-        { className: 'content-area' },
-        activeComponent
-      )
-    )
+        <nav className="sidebar-nav">
+          {navItems.map(item => {
+            const isApplications = item.id === 'applications';
+            return (
+              <button
+                key={item.id}
+                className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                onClick={() => setActiveSection(item.id)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                {sidebarOpen && <span className="nav-label">{item.label}</span>}
+                {isApplications && unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="user-info">
+            <div className="user-avatar">
+              {studentData.first_name?.[0]}{studentData.last_name?.[0]}
+            </div>
+            {sidebarOpen && (
+              <div className="user-details">
+                <div className="user-name">{studentData.first_name} {studentData.last_name}</div>
+                <div className="user-id">{studentData.student_number}</div>
+              </div>
+            )}
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            <span className="logout-icon">🚪</span>
+            {sidebarOpen && 'Logout'}
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="main-content">
+        <header className="content-header">
+          <div className="header-left">
+            <div className="breadcrumb">
+              <span>Dashboard</span>
+              <span className="breadcrumb-separator">/</span>
+              <span className="breadcrumb-current">
+                {navItems.find(item => item.id === activeSection)?.label || 'Dashboard'}
+              </span>
+            </div>
+            <h1>{navItems.find(item => item.id === activeSection)?.label || 'Dashboard'}</h1>
+            <p>Welcome back, {studentData.first_name}!</p>
+          </div>
+
+          <div className="header-right">
+            <div className="header-actions">
+              <div className="search-box">
+                <input type="text" placeholder="Search..." className="search-input" />
+                <span className="search-icon">🔍</span>
+              </div>
+
+              <div className="notification-wrapper">
+                <button className="icon-btn notification-btn" onClick={toggleNotifications}>
+                  <span className="icon">🔔</span>
+                  {unreadCount > 0 && (
+                    <span className="notification-indicator">{unreadCount}</span>
+                  )}
+                </button>
+                {showNotifications && (
+                  <div className="notification-dropdown">
+                    <div className="notification-header">
+                      <h3>Notifications</h3>
+                      <button className="mark-read-btn" onClick={markAllAsRead}>
+                        Mark all as read
+                      </button>
+                    </div>
+                    <div className="notification-list">
+                      {notifications.map(notification => (
+                        <div key={notification.id} className={`notification-item ${notification.read ? 'read' : 'unread'}`}>
+                          <div className="notification-icon">
+                            {notification.type === 'academic' ? '📚' : '⚙️'}
+                          </div>
+                          <div className="notification-content">
+                            <div className="notification-title">{notification.title}</div>
+                            <div className="notification-message">{notification.message}</div>
+                            <div className="notification-time">{notification.timestamp}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button className="theme-toggle icon-btn" onClick={toggleDarkMode}>
+                <span className="icon">{darkMode ? '☀️' : '🌙'}</span>
+              </button>
+            </div>
+
+            <div className="quick-stats">
+              <div className="stat-item">
+                <span className="stat-label">Program</span>
+                <span className="stat-value">{studentData.program_enrolled}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Year Level</span>
+                <span className="stat-value">{studentData.year_level}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Status</span>
+                <span className={`status-badge ${studentData.enrollment_status === 'Active' ? 'active' : 'inactive'}`}>
+                  {studentData.enrollment_status}
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="content-area">
+          {activeComponent}
+        </main>
+      </div>
+    </div>
   );
 };
 
-// Enhanced Dashboard Home Component with COR Quick Access
-const DashboardHome = ({ studentData }) => {
+// Enhanced Dashboard Home Component with COR Quick Access - FIXED
+const DashboardHome = ({ studentData, onCORNavigate }) => {
   const [widgets, setWidgets] = useState(['academic', 'documents', 'schedule', 'announcements']);
   
   const customizableWidgets = {
-    academic: { title: 'Academic Summary', icon: '📚', component: React.createElement(AcademicWidget) },
-    documents: { title: 'Recent Documents', icon: '📄', component: React.createElement(DocumentsWidget) },
-    schedule: { title: 'Class Schedule', icon: '🕒', component: React.createElement(ScheduleWidget) },
-    announcements: { title: 'Announcements', icon: '📢', component: React.createElement(AnnouncementsWidget) },
-    resources: { title: 'Quick Resources', icon: '🏛️', component: React.createElement(ResourcesWidget) },
-    cor: { title: 'COR Generator', icon: '🎓', component: React.createElement(CORWidget) },
+    academic: { title: 'Academic Summary', icon: '📚', component: <AcademicWidget /> },
+    documents: { title: 'Recent Documents', icon: '📄', component: <DocumentsWidget /> },
+    schedule: { title: 'Class Schedule', icon: '🕒', component: <ScheduleWidget /> },
+    announcements: { title: 'Announcements', icon: '📢', component: <AnnouncementsWidget /> },
+    resources: { title: 'Quick Resources', icon: '🏛️', component: <ResourcesWidget /> },
+    cor: { title: 'COR Generator', icon: '🎓', component: <CORWidget onGenerateCOR={onCORNavigate} /> },
   };
 
-  return React.createElement(
-    'div',
-    { className: 'dashboard-home' },
-    React.createElement(
-      'div',
-      { className: 'welcome-banner' },
-      React.createElement('h2', null, 'Welcome to Your Student Portal'),
-      React.createElement('p', null, 'Manage your academic journey and access campus resources')
-    ),
-    React.createElement(
-      'div',
-      { className: 'dashboard-controls' },
-      React.createElement(
-        'div',
-        { className: 'widget-customizer' },
-        React.createElement('h3', null, 'Customize Dashboard'),
-        React.createElement(
-          'div',
-          { className: 'widget-options' },
-          Object.keys(customizableWidgets).map(widgetKey => 
-            React.createElement(
-              'label',
-              { key: widgetKey, className: 'widget-option' },
-              React.createElement('input', {
-                type: 'checkbox',
-                checked: widgets.includes(widgetKey),
-                onChange: (e) => {
-                  if (e.target.checked) {
-                    setWidgets([...widgets, widgetKey]);
-                  } else {
-                    setWidgets(widgets.filter(w => w !== widgetKey));
-                  }
-                }
-              }),
-              customizableWidgets[widgetKey].title
-            )
-          )
-        )
-      )
-    ),
-    React.createElement(
-      'div',
-      { className: 'quick-actions-grid' },
-      React.createElement(
-        'div',
-        { className: 'action-card primary' },
-        React.createElement('div', { className: 'action-icon' }, '📚'),
-        React.createElement('h3', null, 'Academic Records'),
-        React.createElement('p', null, 'View your grades, transcripts, and academic progress'),
-        React.createElement('button', { className: 'action-btn' }, 'View Records')
-      ),
-      React.createElement(
-        'div',
-        { className: 'action-card secondary' },
-        React.createElement('div', { className: 'action-icon' }, '🎓'),
-        React.createElement('h3', null, 'COR Generator'),
-        React.createElement('p', null, 'Generate and print your Certificate of Registration'),
-        React.createElement('button', { 
-          className: 'action-btn',
-          onClick: () => window.location.hash = '#cor'
-        }, 'Generate COR')
-      ),
-      React.createElement(
-        'div',
-        { className: 'action-card success' },
-        React.createElement('div', { className: 'action-icon' }, '👤'),
-        React.createElement('h3', null, 'Profile Settings'),
-        React.createElement('p', null, 'Update your personal information and preferences'),
-        React.createElement('button', { className: 'action-btn' }, 'Edit Profile')
-      ),
-      React.createElement(
-        'div',
-        { className: 'action-card info' },
-        React.createElement('div', { className: 'action-icon' }, '🏛️'),
-        React.createElement('h3', null, 'Campus Resources'),
-        React.createElement('p', null, 'Access library, LMS, and student services'),
-        React.createElement('button', { className: 'action-btn' }, 'Explore')
-      )
-    ),
-    // Customizable Widgets Grid
-    React.createElement(
-      'div',
-      { className: 'widgets-grid' },
-      widgets.map(widgetKey => 
-        React.createElement(
-          'div',
-          { key: widgetKey, className: 'dashboard-widget' },
-          React.createElement(
-            'div',
-            { className: 'widget-header' },
-            React.createElement('span', { className: 'widget-icon' }, customizableWidgets[widgetKey].icon),
-            React.createElement('h3', null, customizableWidgets[widgetKey].title)
-          ),
-          React.createElement(
-            'div',
-            { className: 'widget-content' },
-            customizableWidgets[widgetKey].component
-          )
-        )
-      )
-    ),
-    React.createElement(
-      'div',
-      { className: 'student-info-cards' },
-      React.createElement(
-        'div',
-        { className: 'info-card' },
-        React.createElement('h3', null, 'Student Information'),
-        React.createElement(
-          'div',
-          { className: 'info-grid' },
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Student Number:'),
-            React.createElement('span', null, studentData.student_number)
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Full Name:'),
-            React.createElement('span', null, studentData.first_name + ' ' + (studentData.middle_name || '') + ' ' + studentData.last_name)
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Program:'),
-            React.createElement('span', null, studentData.program_enrolled)
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Year Level:'),
-            React.createElement('span', null, studentData.year_level)
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Institutional Email:'),
-            React.createElement('span', null, studentData.institutional_email)
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('label', null, 'Enrollment Date:'),
-            React.createElement('span', null, studentData.date_enrolled || 'Not specified')
-          )
-        )
-      )
-    )
+  return (
+    <div className="dashboard-home">
+      <div className="welcome-banner">
+        <h2>Welcome to Your Student Portal</h2>
+        <p>Manage your academic journey and access campus resources</p>
+      </div>
+
+      <div className="quick-actions-grid">
+        <div className="action-card primary">
+          <div className="action-icon">📚</div>
+          <h3>Academic Records</h3>
+          <p>View your grades, transcripts, and academic progress</p>
+          <button className="action-btn">View Records</button>
+        </div>
+        
+        <div className="action-card secondary">
+          <div className="action-icon">🎓</div>
+          <h3>COR Generator</h3>
+          <p>Generate and print your Certificate of Registration</p>
+          <button className="action-btn" onClick={onCORNavigate}>
+            Generate COR
+          </button>
+        </div>
+        
+        <div className="action-card success">
+          <div className="action-icon">👤</div>
+          <h3>Profile Settings</h3>
+          <p>Update your personal information and preferences</p>
+          <button className="action-btn">Edit Profile</button>
+        </div>
+        
+        <div className="action-card info">
+          <div className="action-icon">🏛️</div>
+          <h3>Campus Resources</h3>
+          <p>Access library, LMS, and student services</p>
+          <button className="action-btn">Explore</button>
+        </div>
+      </div>
+
+      {/* Customizable Widgets Grid */}
+      <div className="widgets-grid">
+        {widgets.map(widgetKey => (
+          <div key={widgetKey} className="dashboard-widget">
+            <div className="widget-header">
+              <span className="widget-icon">{customizableWidgets[widgetKey].icon}</span>
+              <h3>{customizableWidgets[widgetKey].title}</h3>
+            </div>
+            <div className="widget-content">
+              {customizableWidgets[widgetKey].component}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="student-info-cards">
+        <div className="info-card">
+          <h3>Student Information</h3>
+          <div className="info-grid">
+            <div className="info-item">
+              <label>Student Number:</label>
+              <span>{studentData.student_number}</span>
+            </div>
+            <div className="info-item">
+              <label>Full Name:</label>
+              <span>{studentData.first_name} {studentData.middle_name || ''} {studentData.last_name}</span>
+            </div>
+            <div className="info-item">
+              <label>Program:</label>
+              <span>{studentData.program_enrolled}</span>
+            </div>
+            <div className="info-item">
+              <label>Year Level:</label>
+              <span>{studentData.year_level}</span>
+            </div>
+            <div className="info-item">
+              <label>Institutional Email:</label>
+              <span>{studentData.institutional_email}</span>
+            </div>
+            <div className="info-item">
+              <label>Enrollment Date:</label>
+              <span>{studentData.date_enrolled || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-// New COR Widget Component
-const CORWidget = () =>
-  React.createElement(
-    'div',
-    { className: 'cor-widget' },
-    React.createElement(
-      'div',
-      { className: 'cor-widget-content' },
-      React.createElement('p', null, 'Quickly generate your Certificate of Registration for printing.'),
-      React.createElement(
-        'div',
-        { className: 'cor-features' },
-        React.createElement(
-          'ul',
-          null,
-          React.createElement('li', null, '✅ Printable short bond paper format'),
-          React.createElement('li', null, '✅ Editable course information'),
-          React.createElement('li', null, '✅ Automatic fee calculations'),
-          React.createElement('li', null, '✅ Official PTC format')
-        )
-      ),
-      React.createElement(
-        'button',
-        { 
-          className: 'cor-quick-btn',
-          onClick: () => window.location.hash = '#cor'
-        },
-        '🚀 Generate COR Now'
-      )
-    )
-  );
+// New COR Widget Component - FIXED
+const CORWidget = ({ onGenerateCOR }) => (
+  <div className="cor-widget">
+    <div className="cor-widget-content">
+      <p>Quickly generate your Certificate of Registration for printing.</p>
+      <div className="cor-features">
+        <ul>
+          <li>✅ Printable short bond paper format</li>
+          <li>✅ Editable course information</li>
+          <li>✅ Automatic fee calculations</li>
+          <li>✅ Official PTC format</li>
+        </ul>
+      </div>
+      <button className="cor-quick-btn" onClick={onGenerateCOR}>
+        🚀 Generate COR Now
+      </button>
+    </div>
+  </div>
+);
 
-// Widget Components (keep existing ones)
-const AcademicWidget = () => 
-  React.createElement(
-    'div',
-    { className: 'academic-widget' },
-    React.createElement(
-      'div',
-      { className: 'widget-stat' },
-      React.createElement('span', { className: 'stat-value' }, '1.75'),
-      React.createElement('span', { className: 'stat-label' }, 'Current GPA')
-    ),
-    React.createElement(
-      'div',
-      { className: 'widget-stat' },
-      React.createElement('span', { className: 'stat-value' }, '15'),
-      React.createElement('span', { className: 'stat-label' }, 'Units Enrolled')
-    ),
-    React.createElement('button', { className: 'widget-btn' }, 'View Grades')
-  );
+// Widget Components
+const AcademicWidget = () => (
+  <div className="academic-widget">
+    <div className="widget-stat">
+      <span className="stat-value">1.75</span>
+      <span className="stat-label">Current GPA</span>
+    </div>
+    <div className="widget-stat">
+      <span className="stat-value">15</span>
+      <span className="stat-label">Units Enrolled</span>
+    </div>
+    <button className="widget-btn">View Grades</button>
+  </div>
+);
 
-const DocumentsWidget = () =>
-  React.createElement(
-    'div',
-    { className: 'documents-widget' },
-    React.createElement(
-      'div',
-      { className: 'document-item' },
-      React.createElement('span', { className: 'doc-icon' }, '📄'),
-      React.createElement('span', { className: 'doc-name' }, 'COR - 1st Sem 2024'),
-      React.createElement('button', { className: 'doc-btn' }, 'Print')
-    ),
-    React.createElement(
-      'div',
-      { className: 'document-item' },
-      React.createElement('span', { className: 'doc-icon' }, '📄'),
-      React.createElement('span', { className: 'doc-name' }, 'Grades - Midterm'),
-      React.createElement('button', { className: 'doc-btn' }, 'View')
-    )
-  );
+const DocumentsWidget = () => (
+  <div className="documents-widget">
+    <div className="document-item">
+      <span className="doc-icon">📄</span>
+      <span className="doc-name">COR - 1st Sem 2024</span>
+      <button className="doc-btn">Print</button>
+    </div>
+    <div className="document-item">
+      <span className="doc-icon">📄</span>
+      <span className="doc-name">Grades - Midterm</span>
+      <button className="doc-btn">View</button>
+    </div>
+  </div>
+);
 
-const ScheduleWidget = () =>
-  React.createElement(
-    'div',
-    { className: 'schedule-widget' },
-    React.createElement(
-      'div',
-      { className: 'schedule-item' },
-      React.createElement('span', { className: 'schedule-time' }, '08:00 AM'),
-      React.createElement('span', { className: 'schedule-course' }, 'CS 101')
-    ),
-    React.createElement(
-      'div',
-      { className: 'schedule-item' },
-      React.createElement('span', { className: 'schedule-time' }, '10:00 AM'),
-      React.createElement('span', { className: 'schedule-course' }, 'MATH 102')
-    )
-  );
+const ScheduleWidget = () => (
+  <div className="schedule-widget">
+    <div className="schedule-item">
+      <span className="schedule-time">08:00 AM</span>
+      <span className="schedule-course">CS 101</span>
+    </div>
+    <div className="schedule-item">
+      <span className="schedule-time">10:00 AM</span>
+      <span className="schedule-course">MATH 102</span>
+    </div>
+  </div>
+);
 
-const AnnouncementsWidget = () =>
-  React.createElement(
-    'div',
-    { className: 'announcements-widget' },
-    React.createElement(
-      'div',
-      { className: 'announcement-item' },
-      React.createElement('strong', null, 'System Maintenance'),
-      React.createElement('p', null, 'Portal will be unavailable on Sunday')
-    )
-  );
+const AnnouncementsWidget = () => (
+  <div className="announcements-widget">
+    <div className="announcement-item">
+      <strong>System Maintenance</strong>
+      <p>Portal will be unavailable on Sunday</p>
+    </div>
+  </div>
+);
 
-const ResourcesWidget = () =>
-  React.createElement(
-    'div',
-    { className: 'resources-widget' },
-    React.createElement('button', { className: 'resource-quick-btn' }, 'LMS'),
-    React.createElement('button', { className: 'resource-quick-btn' }, 'Library'),
-    React.createElement('button', { className: 'resource-quick-btn' }, 'Support')
-  );
+const ResourcesWidget = () => (
+  <div className="resources-widget">
+    <button className="resource-quick-btn">LMS</button>
+    <button className="resource-quick-btn">Library</button>
+    <button className="resource-quick-btn">Support</button>
+  </div>
+);
 
-// Keep all other existing components (AcademicSection, DocumentsSection, SchedulerSection, etc.)
-// ... (rest of your existing components remain the same)
-
+// Section Components
 const AcademicSection = ({ studentData }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
 
@@ -636,51 +464,37 @@ const AcademicSection = ({ studentData }) => {
     }, 2000);
   };
 
-  return React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Academic Records'),
-    React.createElement(
-      'div',
-      { className: 'documents-section' },
-      React.createElement(
-        'div',
-        { className: 'section-header' },
-        React.createElement('h3', null, 'Available Documents'),
-        React.createElement('p', null, 'Print your academic documents online')
-      ),
-      React.createElement(
-        'div',
-        { className: 'documents-grid' },
-        academicDocuments.map(doc => 
-          React.createElement(
-            'div',
-            { key: doc.id, className: 'document-card' },
-            React.createElement('div', { className: 'document-icon' }, '📄'),
-            React.createElement(
-              'div',
-              { className: 'document-info' },
-              React.createElement('h3', null, doc.name),
-              React.createElement('p', null, doc.description),
-              React.createElement(
-                'div',
-                { className: `document-status ${doc.available ? 'available' : 'unavailable'}` },
-                doc.available ? 'Available for Printing' : 'Under Processing'
-              )
-            ),
-            React.createElement(
-              'button',
-              {
-                className: `print-btn ${!doc.available ? 'disabled' : ''}`,
-                onClick: () => handlePrintDocument(doc.id),
-                disabled: !doc.available || selectedDocument === doc.id
-              },
-              selectedDocument === doc.id ? 'Printing...' : 'Print Document'
-            )
-          )
-        )
-      )
-    )
+  return (
+    <div className="section-content">
+      <h2>Academic Records</h2>
+      <div className="documents-section">
+        <div className="section-header">
+          <h3>Available Documents</h3>
+          <p>Print your academic documents online</p>
+        </div>
+        <div className="documents-grid">
+          {academicDocuments.map(doc => (
+            <div key={doc.id} className="document-card">
+              <div className="document-icon">📄</div>
+              <div className="document-info">
+                <h3>{doc.name}</h3>
+                <p>{doc.description}</p>
+                <div className={`document-status ${doc.available ? 'available' : 'unavailable'}`}>
+                  {doc.available ? 'Available for Printing' : 'Under Processing'}
+                </div>
+              </div>
+              <button
+                className={`print-btn ${!doc.available ? 'disabled' : ''}`}
+                onClick={() => handlePrintDocument(doc.id)}
+                disabled={!doc.available || selectedDocument === doc.id}
+              >
+                {selectedDocument === doc.id ? 'Printing...' : 'Print Document'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -696,54 +510,32 @@ const DocumentsSection = ({ studentData }) => {
     setDocuments(mockDocuments);
   }, []);
 
-  return React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Online Documents'),
-    React.createElement(
-      'div',
-      { className: 'documents-management' },
-      React.createElement(
-        'div',
-        { className: 'documents-list' },
-        documents.map(doc => 
-          React.createElement(
-            'div',
-            { key: doc.id, className: 'document-item' },
-            React.createElement(
-              'div',
-              { className: 'document-details' },
-              React.createElement('span', { className: 'document-name' }, doc.name),
-              React.createElement(
-                'span',
-                { className: `document-status ${doc.status}` },
-                doc.status === 'available' ? '✅ Available' : '⏳ Processing'
-              )
-            ),
-            React.createElement(
-              'div',
-              { className: 'document-actions' },
-              React.createElement(
-                'button',
-                { 
-                  className: 'action-btn primary', 
-                  disabled: doc.status !== 'available' 
-                },
-                'Download'
-              ),
-              React.createElement(
-                'button',
-                { 
-                  className: 'action-btn secondary', 
-                  disabled: doc.status !== 'available' 
-                },
-                'Print'
-              )
-            )
-          )
-        )
-      )
-    )
+  return (
+    <div className="section-content">
+      <h2>Online Documents</h2>
+      <div className="documents-management">
+        <div className="documents-list">
+          {documents.map(doc => (
+            <div key={doc.id} className="document-item">
+              <div className="document-details">
+                <span className="document-name">{doc.name}</span>
+                <span className={`document-status ${doc.status}`}>
+                  {doc.status === 'available' ? '✅ Available' : '⏳ Processing'}
+                </span>
+              </div>
+              <div className="document-actions">
+                <button className="action-btn primary" disabled={doc.status !== 'available'}>
+                  Download
+                </button>
+                <button className="action-btn secondary" disabled={doc.status !== 'available'}>
+                  Print
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -759,251 +551,173 @@ const SchedulerSection = () => {
     alert('Appointment requested for ' + selectedDate + ' at ' + selectedTime + '\nPurpose: ' + purpose);
   };
 
-  return React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Request Certified True Copy'),
-    React.createElement(
-      'div',
-      { className: 'scheduler-container' },
-      React.createElement(
-        'div',
-        { className: 'scheduler-info' },
-        React.createElement('h3', null, '📅 Schedule an Appointment'),
-        React.createElement('p', null, 'Request for certified true copy of your documents'),
-        React.createElement(
-          'div',
-          { className: 'info-cards' },
-          React.createElement(
-            'div',
-            { className: 'info-card' },
-            React.createElement('h4', null, '📍 Location'),
-            React.createElement('p', null, 'Registrar\'s Office\nMain Building, 2nd Floor')
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-card' },
-            React.createElement('h4', null, '⏰ Office Hours'),
-            React.createElement('p', null, 'Monday-Friday\n8:00 AM - 5:00 PM')
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-card' },
-            React.createElement('h4', null, '📋 Requirements'),
-            React.createElement('p', null, 'Valid ID\nDocument Request Form')
-          )
-        )
-      ),
-      React.createElement(
-        'form',
-        { 
-          className: 'scheduler-form', 
-          onSubmit: handleSubmitRequest 
-        },
-        React.createElement(
-          'div',
-          { className: 'form-group' },
-          React.createElement('label', null, 'Select Date'),
-          React.createElement('input', {
-            type: 'date',
-            value: selectedDate,
-            onChange: (e) => setSelectedDate(e.target.value),
-            min: new Date().toISOString().split('T')[0],
-            required: true
-          })
-        ),
-        React.createElement(
-          'div',
-          { className: 'form-group' },
-          React.createElement('label', null, 'Select Time'),
-          React.createElement(
-            'select',
-            {
-              value: selectedTime,
-              onChange: (e) => setSelectedTime(e.target.value),
-              required: true
-            },
-            React.createElement('option', { value: '' }, 'Choose time slot'),
-            timeSlots.map(slot => 
-              React.createElement('option', { key: slot, value: slot }, slot)
-            )
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'form-group' },
-          React.createElement('label', null, 'Purpose of Request'),
-          React.createElement('textarea', {
-            value: purpose,
-            onChange: (e) => setPurpose(e.target.value),
-            placeholder: 'Please specify the purpose for requesting certified true copies...',
-            rows: 4,
-            required: true
-          })
-        ),
-        React.createElement(
-          'button',
-          { type: 'submit', className: 'submit-btn primary' },
-          'Schedule Appointment'
-        )
-      )
-    )
+  return (
+    <div className="section-content">
+      <h2>Request Certified True Copy</h2>
+      <div className="scheduler-container">
+        <div className="scheduler-info">
+          <h3>📅 Schedule an Appointment</h3>
+          <p>Request for certified true copy of your documents</p>
+          <div className="info-cards">
+            <div className="info-card">
+              <h4>📍 Location</h4>
+              <p>Registrar's Office<br />Main Building, 2nd Floor</p>
+            </div>
+            <div className="info-card">
+              <h4>⏰ Office Hours</h4>
+              <p>Monday-Friday<br />8:00 AM - 5:00 PM</p>
+            </div>
+            <div className="info-card">
+              <h4>📋 Requirements</h4>
+              <p>Valid ID<br />Document Request Form</p>
+            </div>
+          </div>
+        </div>
+        <form className="scheduler-form" onSubmit={handleSubmitRequest}>
+          <div className="form-group">
+            <label>Select Date</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Select Time</label>
+            <select
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              required
+            >
+              <option value="">Choose time slot</option>
+              {timeSlots.map(slot => (
+                <option key={slot} value={slot}>{slot}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Purpose of Request</label>
+            <textarea
+              value={purpose}
+              onChange={(e) => setPurpose(e.target.value)}
+              placeholder="Please specify the purpose for requesting certified true copies..."
+              rows={4}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-btn primary">
+            Schedule Appointment
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
-const ApplicationsSection = () =>
-  React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Application Status'),
-    React.createElement('p', null, 'Track all your applications in one place.'),
-    React.createElement('div', { className: 'coming-soon' }, '📋 Application tracking coming soon...')
-  );
+const ApplicationsSection = () => (
+  <div className="section-content">
+    <h2>Application Status</h2>
+    <p>Track all your applications in one place.</p>
+    <div className="coming-soon">📋 Application tracking coming soon...</div>
+  </div>
+);
 
-const ProfileSection = ({ studentData }) =>
-  React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'My Profile'),
-    React.createElement(
-      'div',
-      { className: 'profile-editor' },
-      React.createElement(
-        'div',
-        { className: 'profile-header' },
-        React.createElement(
-          'div',
-          { className: 'profile-avatar-large' },
-          studentData.first_name[0] + studentData.last_name[0]
-        ),
-        React.createElement(
-          'div',
-          { className: 'profile-info' },
-          React.createElement('h3', null, studentData.first_name + ' ' + studentData.last_name),
-          React.createElement('p', null, studentData.student_number)
-        )
-      ),
-      React.createElement(
-        'div',
-        { className: 'profile-form' },
-        React.createElement('h4', null, 'Personal Information'),
-        React.createElement(
-          'div',
-          { className: 'form-grid' },
-          React.createElement(
-            'div',
-            { className: 'form-group' },
-            React.createElement('label', null, 'First Name'),
-            React.createElement('input', { type: 'text', value: studentData.first_name, readOnly: true })
-          ),
-          React.createElement(
-            'div',
-            { className: 'form-group' },
-            React.createElement('label', null, 'Last Name'),
-            React.createElement('input', { type: 'text', value: studentData.last_name, readOnly: true })
-          ),
-          React.createElement(
-            'div',
-            { className: 'form-group' },
-            React.createElement('label', null, 'Institutional Email'),
-            React.createElement('input', { type: 'email', value: studentData.institutional_email, readOnly: true })
-          ),
-          React.createElement(
-            'div',
-            { className: 'form-group' },
-            React.createElement('label', null, 'Program'),
-            React.createElement('input', { type: 'text', value: studentData.program_enrolled, readOnly: true })
-          )
-        ),
-        React.createElement('button', { className: 'edit-btn' }, 'Request Profile Update')
-      )
-    )
-  );
+const ProfileSection = ({ studentData }) => (
+  <div className="section-content">
+    <h2>My Profile</h2>
+    <div className="profile-editor">
+      <div className="profile-header">
+        <div className="profile-avatar-large">
+          {studentData.first_name?.[0]}{studentData.last_name?.[0]}
+        </div>
+        <div className="profile-info">
+          <h3>{studentData.first_name} {studentData.last_name}</h3>
+          <p>{studentData.student_number}</p>
+        </div>
+      </div>
+      <div className="profile-form">
+        <h4>Personal Information</h4>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>First Name</label>
+            <input type="text" value={studentData.first_name} readOnly />
+          </div>
+          <div className="form-group">
+            <label>Last Name</label>
+            <input type="text" value={studentData.last_name} readOnly />
+          </div>
+          <div className="form-group">
+            <label>Institutional Email</label>
+            <input type="email" value={studentData.institutional_email} readOnly />
+          </div>
+          <div className="form-group">
+            <label>Program</label>
+            <input type="text" value={studentData.program_enrolled} readOnly />
+          </div>
+        </div>
+        <button className="edit-btn">Request Profile Update</button>
+      </div>
+    </div>
+  </div>
+);
 
-const SettingsSection = ({ darkMode, toggleDarkMode }) =>
-  React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Account Settings'),
-    React.createElement(
-      'div',
-      { className: 'settings-grid' },
-      React.createElement(
-        'div',
-        { className: 'setting-card' },
-        React.createElement('h3', null, '🎨 Theme Preferences'),
-        React.createElement(
-          'div',
-          { className: 'theme-settings' },
-          React.createElement(
-            'label',
-            { className: 'theme-toggle-large' },
-            React.createElement('span', null, 'Dark Mode'),
-            React.createElement(
-              'div',
-              { 
-                className: `toggle-switch ${darkMode ? 'active' : ''}`,
-                onClick: toggleDarkMode
-              },
-              React.createElement('div', { className: 'toggle-slider' })
-            )
-          )
-        )
-      ),
-      React.createElement(
-        'div',
-        { className: 'setting-card' },
-        React.createElement('h3', null, '🔒 Password & Security'),
-        React.createElement('p', null, 'Change your password and manage security settings'),
-        React.createElement('button', { className: 'setting-btn' }, 'Manage Security')
-      ),
-      React.createElement(
-        'div',
-        { className: 'setting-card' },
-        React.createElement('h3', null, '🔔 Notifications'),
-        React.createElement('p', null, 'Configure email and push notifications'),
-        React.createElement('button', { className: 'setting-btn' }, 'Notification Settings')
-      ),
-      React.createElement(
-        'div',
-        { className: 'setting-card' },
-        React.createElement('h3', null, '📧 Email Preferences'),
-        React.createElement('p', null, 'Manage your email notification preferences'),
-        React.createElement('button', { className: 'setting-btn' }, 'Email Settings')
-      )
-    )
-  );
+const SettingsSection = ({ darkMode, toggleDarkMode }) => (
+  <div className="section-content">
+    <h2>Account Settings</h2>
+    <div className="settings-grid">
+      <div className="setting-card">
+        <h3>🎨 Theme Preferences</h3>
+        <div className="theme-settings">
+          <label className="theme-toggle-large">
+            <span>Dark Mode</span>
+            <div className={`toggle-switch ${darkMode ? 'active' : ''}`} onClick={toggleDarkMode}>
+              <div className="toggle-slider"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div className="setting-card">
+        <h3>🔒 Password & Security</h3>
+        <p>Change your password and manage security settings</p>
+        <button className="setting-btn">Manage Security</button>
+      </div>
+      <div className="setting-card">
+        <h3>🔔 Notifications</h3>
+        <p>Configure email and push notifications</p>
+        <button className="setting-btn">Notification Settings</button>
+      </div>
+      <div className="setting-card">
+        <h3>📧 Email Preferences</h3>
+        <p>Manage your email notification preferences</p>
+        <button className="setting-btn">Email Settings</button>
+      </div>
+    </div>
+  </div>
+);
 
-const ResourcesSection = () =>
-  React.createElement(
-    'div',
-    { className: 'section-content' },
-    React.createElement('h2', null, 'Campus Resources'),
-    React.createElement(
-      'div',
-      { className: 'resources-grid' },
-      React.createElement(
-        'div',
-        { className: 'resource-card' },
-        React.createElement('h3', null, '💻 Learning Management System'),
-        React.createElement('p', null, 'Access your courses and learning materials'),
-        React.createElement('button', { className: 'resource-btn' }, 'Go to LMS')
-      ),
-      React.createElement(
-        'div',
-        { className: 'resource-card' },
-        React.createElement('h3', null, '📖 Library Resources'),
-        React.createElement('p', null, 'Digital library and research materials'),
-        React.createElement('button', { className: 'resource-btn' }, 'Access Library')
-      ),
-      React.createElement(
-        'div',
-        { className: 'resource-card' },
-        React.createElement('h3', null, '🤝 Student Support'),
-        React.createElement('p', null, 'Get help from various campus offices'),
-        React.createElement('button', { className: 'resource-btn' }, 'Get Support')
-      )
-    )
-  );
+const ResourcesSection = () => (
+  <div className="section-content">
+    <h2>Campus Resources</h2>
+    <div className="resources-grid">
+      <div className="resource-card">
+        <h3>💻 Learning Management System</h3>
+        <p>Access your courses and learning materials</p>
+        <button className="resource-btn">Go to LMS</button>
+      </div>
+      <div className="resource-card">
+        <h3>📖 Library Resources</h3>
+        <p>Digital library and research materials</p>
+        <button className="resource-btn">Access Library</button>
+      </div>
+      <div className="resource-card">
+        <h3>🤝 Student Support</h3>
+        <p>Get help from various campus offices</p>
+        <button className="resource-btn">Get Support</button>
+      </div>
+    </div>
+  </div>
+);
 
 export default StudentDashboard;
