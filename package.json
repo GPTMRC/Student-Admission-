@@ -7,11 +7,14 @@
     "dev:student": "cd client-student && npm start",
     "dev:new-student": "cd client-new-student && npm start",
     "build:admin": "cd client-admin && npm run build",
-    "build:student": "cd client-student && npm run build", 
+    "build:student": "cd client-student && npm run build",
     "build:new-student": "cd client-new-student && npm run build",
     "dev": "concurrently \"npm run dev:admin\" \"npm run dev:student\" \"npm run dev:new-student\""
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "react-scripts": "^5.0.1"
   }
 }
