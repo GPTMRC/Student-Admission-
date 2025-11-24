@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
+import GradeAdvisingPage from './GradeAdvisingPage'; // ✅ component import
+import SubjectsPage from './SubjectsPage'; // ✅ subjects masterlist
 
 const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
@@ -32,7 +34,7 @@ const AdminDashboard = ({ onLogout }) => {
     fetchApplications();
     loadTodos();
     loadEvents();
-    
+
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
@@ -66,12 +68,12 @@ const AdminDashboard = ({ onLogout }) => {
       id: Date.now(),
       title: newEventTitle,
       time: newEventTime,
-      date: dateKey
+      date: dateKey,
     };
 
     const updatedEvents = {
       ...events,
-      [dateKey]: [...(events[dateKey] || []), event]
+      [dateKey]: [...(events[dateKey] || []), event],
     };
 
     saveEvents(updatedEvents);
@@ -83,13 +85,13 @@ const AdminDashboard = ({ onLogout }) => {
   const deleteEvent = (dateKey, eventId) => {
     const updatedEvents = {
       ...events,
-      [dateKey]: events[dateKey].filter(event => event.id !== eventId)
+      [dateKey]: events[dateKey].filter((event) => event.id !== eventId),
     };
-    
+
     if (updatedEvents[dateKey].length === 0) {
       delete updatedEvents[dateKey];
     }
-    
+
     saveEvents(updatedEvents);
   };
 
@@ -102,20 +104,26 @@ const AdminDashboard = ({ onLogout }) => {
   };
 
   const navigateMonth = (direction) => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + direction, 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + direction, 1)
+    );
   };
 
   const isToday = (date) => {
     const today = new Date();
-    return date.getDate() === today.getDate() && 
-           date.getMonth() === today.getMonth() && 
-           date.getFullYear() === today.getFullYear();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
   };
 
   const isSelected = (date) => {
-    return date.getDate() === selectedDate.getDate() && 
-           date.getMonth() === selectedDate.getMonth() && 
-           date.getFullYear() === selectedDate.getFullYear();
+    return (
+      date.getDate() === selectedDate.getDate() &&
+      date.getMonth() === selectedDate.getMonth() &&
+      date.getFullYear() === selectedDate.getFullYear()
+    );
   };
 
   const getEventsForDate = (date) => {
@@ -143,7 +151,7 @@ const AdminDashboard = ({ onLogout }) => {
       id: Date.now(),
       text: newTodo,
       completed: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     saveTodos([...todos, todo]);
@@ -151,19 +159,19 @@ const AdminDashboard = ({ onLogout }) => {
   };
 
   const toggleTodo = (id) => {
-    const updatedTodos = todos.map(todo =>
+    const updatedTodos = todos.map((todo) =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
     saveTodos(updatedTodos);
   };
 
   const deleteTodo = (id) => {
-    const updatedTodos = todos.filter(todo => todo.id !== id);
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
     saveTodos(updatedTodos);
   };
 
   const clearCompletedTodos = () => {
-    const updatedTodos = todos.filter(todo => !todo.completed);
+    const updatedTodos = todos.filter((todo) => !todo.completed);
     saveTodos(updatedTodos);
   };
 
@@ -188,13 +196,21 @@ const AdminDashboard = ({ onLogout }) => {
 
   const handleScheduleExam = (application) => {
     setSelectedApplication(application);
-    
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const defaultDate = tomorrow.toISOString().split('T')[0];
-    
-    setExamSchedule(application.exam_schedule ? application.exam_schedule.split('T')[0] : defaultDate);
-    setExamTime(application.exam_schedule ? application.exam_schedule.split('T')[1].substring(0, 5) : '09:00');
+
+    setExamSchedule(
+      application.exam_schedule
+        ? application.exam_schedule.split('T')[0]
+        : defaultDate
+    );
+    setExamTime(
+      application.exam_schedule
+        ? application.exam_schedule.split('T')[1].substring(0, 5)
+        : '09:00'
+    );
     setShowScheduleModal(true);
   };
 
@@ -206,12 +222,12 @@ const AdminDashboard = ({ onLogout }) => {
 
     try {
       const examDateTime = `${examSchedule}T${examTime}:00`;
-      
+
       const { error } = await supabase
         .from('student_admissions')
-        .update({ 
+        .update({
           exam_schedule: examDateTime,
-          status: 'scheduled'
+          status: 'scheduled',
         })
         .eq('id', selectedApplication.id);
 
@@ -230,18 +246,20 @@ const AdminDashboard = ({ onLogout }) => {
 
   const sendExamScheduleEmail = async (application, examDateTime) => {
     try {
-      const studentName = `${application.first_name} ${application.middle_name ? application.middle_name + ' ' : ''}${application.last_name}`;
-      
+      const studentName = `${application.first_name} ${
+        application.middle_name ? application.middle_name + ' ' : ''
+      }${application.last_name}`;
+
       const response = await fetch('http://localhost:4001/send-confirmation', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           student_name: studentName,
           student_email: application.email,
           exam_schedule: examDateTime,
-          year_level: application.year_level
+          year_level: application.year_level,
         }),
       });
 
@@ -293,13 +311,13 @@ const AdminDashboard = ({ onLogout }) => {
     }
   };
 
-  const filteredApplications = applications.filter(app => {
+  const filteredApplications = applications.filter((app) => {
     const matchesStatus = filterStatus === 'all' || app.status === filterStatus;
-    const matchesSearch = 
+    const matchesSearch =
       app.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     return matchesStatus && matchesSearch;
   });
 
@@ -308,11 +326,14 @@ const AdminDashboard = ({ onLogout }) => {
       submitted: { label: 'Submitted', class: 'status-submitted' },
       scheduled: { label: 'Scheduled', class: 'status-scheduled' },
       completed: { label: 'Completed', class: 'status-completed' },
-      rejected: { label: 'Rejected', class: 'status-rejected' }
+      rejected: { label: 'Rejected', class: 'status-rejected' },
     };
-    
-    const config = statusConfig[status] || { label: 'Pending', class: 'status-pending' };
-    return <span className={`status-badge ${config.class}`}>{config.label}</span>;
+
+    const config =
+      statusConfig[status] || { label: 'Pending', class: 'status-pending' };
+    return (
+      <span className={`status-badge ${config.class}`}>{config.label}</span>
+    );
   };
 
   const formatDate = (dateString) => {
@@ -321,7 +342,7 @@ const AdminDashboard = ({ onLogout }) => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -332,11 +353,19 @@ const AdminDashboard = ({ onLogout }) => {
     const days = [];
 
     // Previous month days
-    const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const prevMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() - 1,
+      1
+    );
     const daysInPrevMonth = getDaysInMonth(prevMonth);
-    
+
     for (let i = firstDay - 1; i >= 0; i--) {
-      const date = new Date(prevMonth.getFullYear(), prevMonth.getMonth(), daysInPrevMonth - i);
+      const date = new Date(
+        prevMonth.getFullYear(),
+        prevMonth.getMonth(),
+        daysInPrevMonth - i
+      );
       days.push(
         <div key={`prev-${i}`} className="calendar-day micro other-month">
           {daysInPrevMonth - i}
@@ -346,19 +375,28 @@ const AdminDashboard = ({ onLogout }) => {
 
     // Current month days
     for (let i = 1; i <= daysInMonth; i++) {
-      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+      const date = new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth(),
+        i
+      );
       const dateEvents = getEventsForDate(date);
-      
+
       days.push(
         <div
           key={i}
-          className={`calendar-day micro ${isToday(date) ? 'today' : ''} ${isSelected(date) ? 'selected' : ''}`}
+          className={`calendar-day micro ${isToday(date) ? 'today' : ''} ${
+            isSelected(date) ? 'selected' : ''
+          }`}
           onClick={() => setSelectedDate(date)}
         >
           <span className="day-number micro">{i}</span>
           {dateEvents.length > 0 && (
             <div className="day-events micro">
-              <div className="event-indicator micro" title={`${dateEvents.length} events`}>
+              <div
+                className="event-indicator micro"
+                title={`${dateEvents.length} events`}
+              >
                 {dateEvents.length}
               </div>
             </div>
@@ -385,9 +423,11 @@ const AdminDashboard = ({ onLogout }) => {
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'applications', label: 'Applications', icon: '📰' },
     { id: 'students', label: 'Students', icon: '👤' },
+    { id: 'subjects', label: 'Subjects', icon: '📚' }, // 🔥 NEW
+    { id: 'gradeAdvising', label: 'Grade Advising', icon: '🎓' },
     { id: 'exams', label: 'Exams', icon: '✓' },
     { id: 'reports', label: 'Reports', icon: '📉' },
-    { id: 'settings', label: 'Settings', icon: '☰' }
+    { id: 'settings', label: 'Settings', icon: '☰' },
   ];
 
   const toggleSidebar = () => {
@@ -406,7 +446,11 @@ const AdminDashboard = ({ onLogout }) => {
   return (
     <div className="admin-dashboard">
       {/* Ultra Compact Navigation Sidebar */}
-      <div className={`dashboard-sidebar ${isSidebarOpen ? 'open' : 'closed'} ${isMobile ? 'mobile' : ''}`}>
+      <div
+        className={`dashboard-sidebar ${
+          isSidebarOpen ? 'open' : 'closed'
+        } ${isMobile ? 'mobile' : ''}`}
+      >
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <img src="logo-ptc.png" alt="PTC Logo" />
@@ -418,12 +462,14 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           )}
         </div>
-        
+
         <nav className="sidebar-nav">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <button
               key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+              className={`nav-item ${
+                activeSection === item.id ? 'active' : ''
+              }`}
               onClick={() => {
                 setActiveSection(item.id);
                 if (isMobile) setIsSidebarOpen(false);
@@ -431,13 +477,19 @@ const AdminDashboard = ({ onLogout }) => {
               title={item.label}
             >
               <span className="nav-icon">{item.icon}</span>
-              {isSidebarOpen && <span className="nav-label">{item.label}</span>}
+              {isSidebarOpen && (
+                <span className="nav-label">{item.label}</span>
+              )}
             </button>
           ))}
         </nav>
-        
+
         <div className="sidebar-footer">
-          <button className="nav-item logout-nav" onClick={onLogout} title="Logout">
+          <button
+            className="nav-item logout-nav"
+            onClick={onLogout}
+            title="Logout"
+          >
             <span className="nav-icon">🚪</span>
             {isSidebarOpen && <span className="nav-label">Logout</span>}
           </button>
@@ -446,7 +498,10 @@ const AdminDashboard = ({ onLogout }) => {
 
       {/* Overlay for mobile when sidebar is open */}
       {isMobile && isSidebarOpen && (
-        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+        <div
+          className="sidebar-overlay"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
       )}
 
       {/* Main Content Area */}
@@ -459,7 +514,8 @@ const AdminDashboard = ({ onLogout }) => {
                 <span className="menu-icon">☰</span>
               </button>
               <h1 className="page-title">
-                {navItems.find(item => item.id === activeSection)?.label || 'Dashboard'}
+                {navItems.find((item) => item.id === activeSection)?.label ||
+                  'Dashboard'}
               </h1>
             </div>
             <div className="admin-info">
@@ -468,9 +524,10 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           </div>
         </div>
-        
+
         {/* Main Content */}
         <div className="dashboard-content">
+          {/* DASHBOARD SECTION */}
           {activeSection === 'dashboard' && (
             <div className="dashboard-grid swapped-layout">
               {/* Top Row: Quick Stats and To-Do */}
@@ -479,7 +536,9 @@ const AdminDashboard = ({ onLogout }) => {
                 <div className="dashboard-card quick-stats micro">
                   <div className="card-header micro">
                     <h3>Overview</h3>
-                    <span className="last-updated micro">Updated just now</span>
+                    <span className="last-updated micro">
+                      Updated just now
+                    </span>
                   </div>
                   <div className="stats-grid micro">
                     <div className="stat-item micro">
@@ -487,7 +546,9 @@ const AdminDashboard = ({ onLogout }) => {
                         <span className="stat-icon">📋</span>
                       </div>
                       <div className="stat-content micro">
-                        <span className="stat-number micro">{applications.length}</span>
+                        <span className="stat-number micro">
+                          {applications.length}
+                        </span>
                         <span className="stat-label micro">Total Apps</span>
                       </div>
                     </div>
@@ -497,7 +558,11 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                       <div className="stat-content micro">
                         <span className="stat-number micro">
-                          {applications.filter(app => app.status === 'scheduled').length}
+                          {
+                            applications.filter(
+                              (app) => app.status === 'scheduled'
+                            ).length
+                          }
                         </span>
                         <span className="stat-label micro">Scheduled</span>
                       </div>
@@ -508,7 +573,12 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                       <div className="stat-content micro">
                         <span className="stat-number micro">
-                          {applications.filter(app => !app.status || app.status === 'submitted').length}
+                          {
+                            applications.filter(
+                              (app) =>
+                                !app.status || app.status === 'submitted'
+                            ).length
+                          }
                         </span>
                         <span className="stat-label micro">Pending</span>
                       </div>
@@ -519,7 +589,11 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                       <div className="stat-content micro">
                         <span className="stat-number micro">
-                          {applications.filter(app => app.status === 'completed').length}
+                          {
+                            applications.filter(
+                              (app) => app.status === 'completed'
+                            ).length
+                          }
                         </span>
                         <span className="stat-label micro">Completed</span>
                       </div>
@@ -533,11 +607,11 @@ const AdminDashboard = ({ onLogout }) => {
                     <h3>To-Do</h3>
                     <div className="todo-header-actions micro">
                       <span className="todo-count micro">
-                        {todos.filter(todo => !todo.completed).length}
+                        {todos.filter((todo) => !todo.completed).length}
                       </span>
                     </div>
                   </div>
-                  
+
                   {/* Micro Todo Input */}
                   <div className="todo-form micro">
                     <input
@@ -548,9 +622,14 @@ const AdminDashboard = ({ onLogout }) => {
                       onKeyPress={(e) => e.key === 'Enter' && addTodo()}
                       className="todo-input micro"
                     />
-                    <button onClick={addTodo} className="btn btn-primary micro">Add</button>
+                    <button
+                      onClick={addTodo}
+                      className="btn btn-primary micro"
+                    >
+                      Add
+                    </button>
                   </div>
-                  
+
                   <div className="todo-list micro">
                     {todos.length === 0 ? (
                       <div className="no-todos micro">
@@ -559,7 +638,7 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                     ) : (
                       <div className="todos-container micro">
-                        {todos.slice(0, 4).map(todo => (
+                        {todos.slice(0, 4).map((todo) => (
                           <div key={todo.id} className="todo-item micro">
                             <label className="todo-checkbox micro">
                               <input
@@ -567,7 +646,11 @@ const AdminDashboard = ({ onLogout }) => {
                                 checked={todo.completed}
                                 onChange={() => toggleTodo(todo.id)}
                               />
-                              <span className={`todo-text micro ${todo.completed ? 'completed' : ''}`}>
+                              <span
+                                className={`todo-text micro ${
+                                  todo.completed ? 'completed' : ''
+                                }`}
+                              >
                                 {todo.text}
                               </span>
                             </label>
@@ -583,10 +666,13 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                     )}
                   </div>
-                  
-                  {todos.some(todo => todo.completed) && (
+
+                  {todos.some((todo) => todo.completed) && (
                     <div className="todo-actions micro">
-                      <button onClick={clearCompletedTodos} className="btn-text micro">
+                      <button
+                        onClick={clearCompletedTodos}
+                        className="btn-text micro"
+                      >
                         Clear Completed
                       </button>
                     </div>
@@ -600,14 +686,27 @@ const AdminDashboard = ({ onLogout }) => {
                 <div className="dashboard-card calendar-section micro">
                   <div className="card-header micro">
                     <div className="calendar-header-micro">
-                      <button onClick={() => navigateMonth(-1)} className="nav-btn micro">‹</button>
+                      <button
+                        onClick={() => navigateMonth(-1)}
+                        className="nav-btn micro"
+                      >
+                        ‹
+                      </button>
                       <span className="current-month micro">
-                        {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        {currentMonth.toLocaleDateString('en-US', {
+                          month: 'short',
+                          year: 'numeric',
+                        })}
                       </span>
-                      <button onClick={() => navigateMonth(1)} className="nav-btn micro">›</button>
+                      <button
+                        onClick={() => navigateMonth(1)}
+                        className="nav-btn micro"
+                      >
+                        ›
+                      </button>
                     </div>
                     <div className="calendar-actions micro">
-                      <button 
+                      <button
                         onClick={() => setShowEventForm(!showEventForm)}
                         className="btn btn-primary micro"
                         title="Add event"
@@ -616,18 +715,23 @@ const AdminDashboard = ({ onLogout }) => {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="calendar micro">
                     <div className="calendar-header micro">
-                      {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                        <div key={day} className="calendar-day-header micro">{day}</div>
+                      {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
+                        <div
+                          key={day}
+                          className="calendar-day-header micro"
+                        >
+                          {day}
+                        </div>
                       ))}
                     </div>
                     <div className="calendar-grid micro">
                       {renderCalendar()}
                     </div>
                   </div>
-                  
+
                   {/* Micro Event Form */}
                   {showEventForm && (
                     <div className="event-form micro">
@@ -637,7 +741,9 @@ const AdminDashboard = ({ onLogout }) => {
                           type="text"
                           placeholder="Event title"
                           value={newEventTitle}
-                          onChange={(e) => setNewEventTitle(e.target.value)}
+                          onChange={(e) =>
+                            setNewEventTitle(e.target.value)
+                          }
                           className="event-input micro"
                         />
                         <input
@@ -646,32 +752,50 @@ const AdminDashboard = ({ onLogout }) => {
                           onChange={(e) => setNewEventTime(e.target.value)}
                           className="time-input micro"
                         />
-                        <button onClick={addEvent} className="btn btn-primary micro">Add</button>
+                        <button
+                          onClick={addEvent}
+                          className="btn btn-primary micro"
+                        >
+                          Add
+                        </button>
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Micro Events List */}
                   {getEventsForDate(selectedDate).length > 0 && (
                     <div className="events-list micro">
                       <div className="events-header micro">
                         <h4>Today's Events</h4>
-                        <span className="event-count micro">{getEventsForDate(selectedDate).length}</span>
+                        <span className="event-count micro">
+                          {getEventsForDate(selectedDate).length}
+                        </span>
                       </div>
                       <div className="events-container micro">
-                        {getEventsForDate(selectedDate).slice(0, 2).map(event => (
-                          <div key={event.id} className="event-item micro">
-                            <div className="event-time micro">{event.time}</div>
-                            <div className="event-title micro">{event.title}</div>
-                            <button
-                              onClick={() => deleteEvent(event.date, event.id)}
-                              className="btn-icon btn-delete micro"
-                              title="Delete event"
+                        {getEventsForDate(selectedDate)
+                          .slice(0, 2)
+                          .map((event) => (
+                            <div
+                              key={event.id}
+                              className="event-item micro"
                             >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                              <div className="event-time micro">
+                                {event.time}
+                              </div>
+                              <div className="event-title micro">
+                                {event.title}
+                              </div>
+                              <button
+                                onClick={() =>
+                                  deleteEvent(event.date, event.id)
+                                }
+                                className="btn-icon btn-delete micro"
+                                title="Delete event"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -687,16 +811,27 @@ const AdminDashboard = ({ onLogout }) => {
                     <button className="btn-text micro">View All</button>
                   </div>
                   <div className="activity-list micro">
-                    {applications.slice(0, 8).map((app, index) => (
+                    {applications.slice(0, 8).map((app) => (
                       <div key={app.id} className="activity-item micro">
                         <div className="activity-icon micro">📋</div>
                         <div className="activity-content micro">
                           <div className="activity-text micro">
-                            <strong>{app.first_name} {app.last_name}</strong> applied for {app.desired_program}
+                            <strong>
+                              {app.first_name} {app.last_name}
+                            </strong>{' '}
+                            applied for {app.desired_program}
                           </div>
                           <div className="activity-meta micro">
-                            <span className="activity-time micro">{new Date(app.submitted_at).toLocaleDateString()}</span>
-                            <span className={`activity-status micro ${app.status || 'submitted'}`}>
+                            <span className="activity-time micro">
+                              {new Date(
+                                app.submitted_at
+                              ).toLocaleDateString()}
+                            </span>
+                            <span
+                              className={`activity-status micro ${
+                                app.status || 'submitted'
+                              }`}
+                            >
                               {app.status || 'Submitted'}
                             </span>
                           </div>
@@ -709,6 +844,7 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           )}
 
+          {/* APPLICATIONS SECTION */}
           {activeSection === 'applications' && (
             <>
               {/* Statistics Cards */}
@@ -724,7 +860,11 @@ const AdminDashboard = ({ onLogout }) => {
                   <div className="stat-icon">🗓️</div>
                   <div className="stat-info">
                     <div className="stat-number">
-                      {applications.filter(app => app.status === 'scheduled').length}
+                      {
+                        applications.filter(
+                          (app) => app.status === 'scheduled'
+                        ).length
+                      }
                     </div>
                     <div className="stat-label">Scheduled</div>
                   </div>
@@ -733,7 +873,12 @@ const AdminDashboard = ({ onLogout }) => {
                   <div className="stat-icon">⏳</div>
                   <div className="stat-info">
                     <div className="stat-number">
-                      {applications.filter(app => !app.status || app.status === 'submitted').length}
+                      {
+                        applications.filter(
+                          (app) =>
+                            !app.status || app.status === 'submitted'
+                        ).length
+                      }
                     </div>
                     <div className="stat-label">Pending</div>
                   </div>
@@ -742,7 +887,11 @@ const AdminDashboard = ({ onLogout }) => {
                   <div className="stat-icon">✅</div>
                   <div className="stat-info">
                     <div className="stat-number">
-                      {applications.filter(app => app.status === 'completed').length}
+                      {
+                        applications.filter(
+                          (app) => app.status === 'completed'
+                        ).length
+                      }
                     </div>
                     <div className="stat-label">Completed</div>
                   </div>
@@ -759,10 +908,10 @@ const AdminDashboard = ({ onLogout }) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="filter-controls">
-                  <select 
-                    value={filterStatus} 
+                  <select
+                    value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="status-filter"
                   >
@@ -772,8 +921,11 @@ const AdminDashboard = ({ onLogout }) => {
                     <option value="completed">Completed</option>
                     <option value="rejected">Rejected</option>
                   </select>
-                  
-                  <button onClick={fetchApplications} className="refresh-btn">
+
+                  <button
+                    onClick={fetchApplications}
+                    className="refresh-btn"
+                  >
                     Refresh
                   </button>
                 </div>
@@ -803,8 +955,13 @@ const AdminDashboard = ({ onLogout }) => {
                         <tr key={application.id}>
                           <td>
                             <div className="student-info-compact">
-                              <div className="student-name">{application.first_name} {application.last_name}</div>
-                              <div className="student-email">{application.email}</div>
+                              <div className="student-name">
+                                {application.first_name}{' '}
+                                {application.last_name}
+                              </div>
+                              <div className="student-email">
+                                {application.email}
+                              </div>
                             </div>
                           </td>
                           <td>{application.desired_program}</td>
@@ -814,16 +971,23 @@ const AdminDashboard = ({ onLogout }) => {
                           <td>
                             <div className="action-buttons">
                               <button
-                                onClick={() => handleScheduleExam(application)}
+                                onClick={() =>
+                                  handleScheduleExam(application)
+                                }
                                 className="btn-icon"
                                 title="Schedule Exam"
                               >
                                 🗓️
                               </button>
-                              
+
                               <select
                                 value={application.status || 'submitted'}
-                                onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
+                                onChange={(e) =>
+                                  updateApplicationStatus(
+                                    application.id,
+                                    e.target.value
+                                  )
+                                }
                                 className="status-select"
                               >
                                 <option value="submitted">Submitted</option>
@@ -831,9 +995,11 @@ const AdminDashboard = ({ onLogout }) => {
                                 <option value="completed">Completed</option>
                                 <option value="rejected">Rejected</option>
                               </select>
-                              
+
                               <button
-                                onClick={() => deleteApplication(application.id)}
+                                onClick={() =>
+                                  deleteApplication(application.id)
+                                }
                                 className="btn-icon btn-delete"
                                 title="Delete Application"
                               >
@@ -850,16 +1016,34 @@ const AdminDashboard = ({ onLogout }) => {
             </>
           )}
 
-          {/* Placeholder for other sections */}
-          {activeSection !== 'dashboard' && activeSection !== 'applications' && (
-            <div className="section-placeholder">
-              <div className="placeholder-icon">
-                {navItems.find(item => item.id === activeSection)?.icon}
+          {/* SUBJECTS MASTERLIST SECTION */}
+          {activeSection === 'subjects' && <SubjectsPage />}
+
+          {/* GRADE ADVISING SECTION */}
+          {activeSection === 'gradeAdvising' && <GradeAdvisingPage />}
+
+          {/* Placeholder for other sections (students, exams, reports, settings) */}
+          {activeSection !== 'dashboard' &&
+            activeSection !== 'applications' &&
+            activeSection !== 'subjects' &&
+            activeSection !== 'gradeAdvising' && (
+              <div className="section-placeholder">
+                <div className="placeholder-icon">
+                  {
+                    navItems.find((item) => item.id === activeSection)
+                      ?.icon
+                  }
+                </div>
+                <h2>
+                  {
+                    navItems.find((item) => item.id === activeSection)
+                      ?.label
+                  }{' '}
+                  Section
+                </h2>
+                <p>This section is under development.</p>
               </div>
-              <h2>{navItems.find(item => item.id === activeSection)?.label} Section</h2>
-              <p>This section is under development.</p>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
@@ -869,20 +1053,26 @@ const AdminDashboard = ({ onLogout }) => {
           <div className="modal-content">
             <div className="modal-header">
               <h2>Schedule Exam</h2>
-              <button 
+              <button
                 onClick={() => setShowScheduleModal(false)}
                 className="close-btn"
               >
                 ×
               </button>
             </div>
-            
+
             <div className="modal-body">
               <div className="student-info">
-                <h4>{selectedApplication.first_name} {selectedApplication.last_name}</h4>
-                <p>{selectedApplication.email} • {selectedApplication.desired_program}</p>
+                <h4>
+                  {selectedApplication.first_name}{' '}
+                  {selectedApplication.last_name}
+                </h4>
+                <p>
+                  {selectedApplication.email} •{' '}
+                  {selectedApplication.desired_program}
+                </p>
               </div>
-              
+
               <div className="schedule-form">
                 <div className="form-group">
                   <label>Exam Date</label>
@@ -893,7 +1083,7 @@ const AdminDashboard = ({ onLogout }) => {
                     min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label>Exam Time</label>
                   <input
@@ -904,15 +1094,15 @@ const AdminDashboard = ({ onLogout }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="modal-footer">
-              <button 
+              <button
                 onClick={() => setShowScheduleModal(false)}
                 className="btn btn-secondary"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={submitExamSchedule}
                 className="btn btn-primary"
               >

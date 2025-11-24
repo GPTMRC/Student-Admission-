@@ -1772,3 +1772,214 @@ select:focus-visible {
     border: 1px solid #ddd;
   }
 }
+/* ============================= */
+/* Grade Advising Page Styles    */
+/* ============================= */
+
+.grade-advising-container {
+  margin-top: 1rem;
+  background: #ffffff;
+  border: 1px solid #d1e7dd;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+}
+
+/* Tabs for Grade Advising / Drop / Transferee */
+.grade-advising-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.25rem;
+}
+
+.grade-tab {
+  border: none;
+  background: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #4b5563;
+  transition: all 0.15s ease;
+}
+
+.grade-tab:hover {
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+}
+
+.grade-tab.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.3);
+}
+
+.grade-advising-body {
+  margin-top: 0.5rem;
+}
+
+/* Header of Grade Advising (title + status dropdown) */
+.grade-advising-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.grade-advising-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.grade-advising-status-select {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.grade-advising-status-select label {
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.grade-advising-status-select select {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d1e7dd;
+  font-size: 0.8rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grade-advising-status-select select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+/* Error message when irregular tries to pick regular subject */
+.error-banner {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.8rem;
+}
+
+/* Table wrapper (horizontal scroll if many columns) */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+
+/* Subjects table for Grade Advising */
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.subjects-table th,
+.subjects-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.subjects-table th {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e8f5e9 100%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #065f46;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subjects-table tr:hover td {
+  background: #f8fdf9;
+}
+
+/* Row disabled (not allowed for irregular / no slot) */
+.row-disabled {
+  opacity: 0.6;
+}
+
+.row-disabled:hover td {
+  background: #ffffff !important;
+}
+
+/* Selected subjects empty state */
+.empty-state {
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding: 0.5rem 0;
+}
+
+/* Total units row */
+.total-row td {
+  background: #f9fafb;
+  font-size: 0.8rem;
+}
+
+/* Subpages: Drop Student / Transferee */
+.grade-advising-subpage {
+  padding: 0.75rem 0.25rem;
+}
+
+.grade-advising-subpage h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #065f46;
+}
+
+.placeholder-text {
+  font-size: 0.8rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Buttons used inside Grade Advising table */
+.btn.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn.danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.btn.danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+/* Responsive tweaks for grade advising */
+@media (max-width: 768px) {
+  .grade-advising-header {
+    align-items: flex-start;
+  }
+
+  .grade-advising-status-select {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .subjects-table th,
+  .subjects-table td {
+    padding: 0.5rem 0.6rem;
+  }
+}
