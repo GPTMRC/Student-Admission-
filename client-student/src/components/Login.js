@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
 const Login = ({ setIsAuthenticated, setStudentData }) => {
@@ -41,11 +41,13 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
         .single();
 
       if (studentError || !student) {
-        setError('No student account found with this institutional email. Please contact MIS office.');
+        setError('No student account found with this institutional email. Please contact MIS office or register for an account.');
         setLoading(false);
         return;
       }
 
+      // REMOVED ACCOUNT APPROVAL CHECK - Students can login immediately after registration
+      
       // SIMPLIFIED PASSWORD CHECK
       const validPasswords = ['welcome123', 'password123', 'ptc2024', '123456'];
       
@@ -68,6 +70,10 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegisterRedirect = () => {
+    navigate('/register');
   };
 
   // Debug: Log when component re-renders
@@ -128,6 +134,15 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
                     'Sign In to Dashboard'
                   )}
                 </button>
+
+                {/* Create Account Button */}
+                <button 
+                  type="button" 
+                  onClick={handleRegisterRedirect}
+                  className="login-btn create-account-btn"
+                >
+                  Create Account
+                </button>
               </form>
 
               <div className="test-credentials">
@@ -173,6 +188,14 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
                     <p>Access from authorized networks and devices only. Public networks are restricted.</p>
                   </div>
                 </div>
+                {/* REMOVED ACCOUNT APPROVAL REQUIREMENT */}
+              </div>
+
+              {/* New Student Registration Info */}
+              <div className="new-student-info">
+                <h3>New to PTC Portal?</h3>
+                <p>First time users can create their student account to access the dashboard and institutional services.</p>
+        
               </div>
             </div>
           </div>
@@ -184,7 +207,7 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
         <div className="help-footer-content">
           <div className="help-info">
             <h3>Need Help?</h3>
-            <p>Contact MIS Office for account issues or technical support during office hours.</p>
+            <p>Contact MIS Office for account issues, registration, or technical support during office hours.</p>
           </div>
           <div className="contact-details">
             <div className="contact-item">

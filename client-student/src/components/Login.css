@@ -492,3 +492,108 @@
     font-size: 0.85rem;
   }
 }
+/* Secondary button styles */
+.secondary-btn {
+  background-color: #6c757d !important;
+  border: 1px solid #6c757d !important;
+  margin-top: 10px !important;
+}
+
+.secondary-btn:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+}
+
+/* Registration link styles */
+.register-link {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.register-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* Registration info section in the info card */
+.registration-info {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.registration-info h3 {
+  color: #007bff;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.registration-info p {
+  color: #666;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.registration-info-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.registration-info-btn:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .registration-info {
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  .secondary-btn {
+    margin-top: 15px !important;
+  }
+}
+
+.password-requirements {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.password-requirements p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.password-requirements ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.password-requirements li {
+  margin-bottom: 4px;
+  color: #6c757d;
+}
