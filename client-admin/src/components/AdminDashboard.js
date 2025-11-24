@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
-import GradeAdvisingPage from './GradeAdvisingPage'; // ✅ component import
+import StudentAdvisingPage from './StudentAdvising'; // ✅ component import
 import SubjectsPage from './SubjectsPage'; // ✅ subjects masterlist
 
 const AdminDashboard = ({ onLogout }) => {
@@ -419,12 +419,12 @@ const AdminDashboard = ({ onLogout }) => {
     return days;
   };
 
+  // ✅ FIXED NAVIGATION ITEMS - Removed duplicates
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'applications', label: 'Applications', icon: '📰' },
-    { id: 'students', label: 'Students', icon: '👤' },
-    { id: 'subjects', label: 'Subjects', icon: '📚' }, // 🔥 NEW
-    { id: 'gradeAdvising', label: 'Grade Advising', icon: '🎓' },
+    { id: 'studentAdvising', label: 'Student Advising', icon: '🎓' }, // ✅ Profile icon for advising
+    { id: 'subjects', label: 'Subjects', icon: '📚' },
     { id: 'exams', label: 'Exams', icon: '✓' },
     { id: 'reports', label: 'Reports', icon: '📉' },
     { id: 'settings', label: 'Settings', icon: '☰' },
@@ -1019,14 +1019,14 @@ const AdminDashboard = ({ onLogout }) => {
           {/* SUBJECTS MASTERLIST SECTION */}
           {activeSection === 'subjects' && <SubjectsPage />}
 
-          {/* GRADE ADVISING SECTION */}
-          {activeSection === 'gradeAdvising' && <GradeAdvisingPage />}
+          {/* ✅ STUDENT ADVISING SECTION - Fixed ID to match navigation */}
+          {activeSection === 'studentAdvising' && <StudentAdvisingPage />}
 
           {/* Placeholder for other sections (students, exams, reports, settings) */}
           {activeSection !== 'dashboard' &&
             activeSection !== 'applications' &&
             activeSection !== 'subjects' &&
-            activeSection !== 'gradeAdvising' && (
+            activeSection !== 'studentAdvising' && (
               <div className="section-placeholder">
                 <div className="placeholder-icon">
                   {
