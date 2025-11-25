@@ -36,3 +36,4 @@ export default function App() {
   // Show AdminLogin when not logged in
   return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
 }
+
