@@ -1,0 +1,238 @@
+/* Container */
+.advising-page {
+  min-height: 100vh;
+  padding: 24px;
+  background: #f5f7fb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #222;
+}
+
+/* Main title */
+.advising-page > h1 {
+  margin-bottom: 16px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+/* Sections as cards */
+.advising-page section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* Section titles */
+.advising-page section h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Subheadings (Search results, etc.) */
+.advising-page section h3 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Inputs + selects */
+.advising-page input[type="text"],
+.advising-page select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  min-width: 200px;
+  background: #f9fafb;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.advising-page input[type="text"]:focus,
+.advising-page select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+  background: #ffffff;
+}
+
+/* Generic buttons */
+.advising-page button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+
+.advising-page button:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.advising-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Primary-style buttons (Search, Save, etc.) */
+.advising-page section button:first-of-type {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.advising-page section button:first-of-type:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+/* Tab buttons row (2nd section) */
+.advising-page > section:nth-of-type(2) {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  align-items: center;
+}
+
+/* Make tab buttons look like tabs */
+.advising-page > section:nth-of-type(2) button {
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The first tab (Plan Subjects) as "active" by default visual */
+.advising-page > section:nth-of-type(2) button:first-of-type {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+/* If you later add classNames for active tab, you can replace above with .tab-active, etc. */
+
+/* Student info block */
+.advising-page section div p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+/* Highlight Student Type */
+.advising-page p strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Table styling */
+.advising-page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 13px;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.advising-page table thead {
+  background: #eff3ff;
+}
+
+.advising-page table th,
+.advising-page table td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.advising-page table th {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 12px;
+}
+
+.advising-page table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+/* Eligibility colors */
+.advising-page td:nth-child(6) {
+  font-weight: 500;
+}
+
+/* Simple color hint based on content text */
+.advising-page td:nth-child(6):contains("Not allowed") {
+  color: #b91c1c;
+}
+.advising-page td:nth-child(6):contains("Eligible") {
+  color: #15803d;
+}
+
+/* (Note: :contains won't work in all browsers; optional. 
+   If hindi gumana, ok lang, neutral text pa rin.) */
+
+/* Section buttons (inside table) */
+.advising-page td > div > button {
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.advising-page td > div > button[style*="2px solid green"] {
+  /* Chosen section (maintain border but add subtle bg) */
+  background: #dcfce7;
+}
+
+/* Messages */
+.advising-page p {
+  font-size: 13px;
+}
+
+/* Error text */
+.advising-page p[style*="color: \"red\""],
+.advising-page p[style*="color:\"red\""] {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* Summary list */
+.advising-page ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.advising-page ul li {
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+/* Responsive tweak */
+@media (max-width: 768px) {
+  .advising-page {
+    padding: 12px;
+  }
+
+  .advising-page table {
+    font-size: 12px;
+  }
+
+  .advising-page input[type="text"],
+  .advising-page select {
+    min-width: 160px;
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
-import StudentAdvisingPage from './StudentAdvising'; // ✅ component import
+import StudentAdvisingPage from './StudentAdvisingPage'; // ✅ component import
 import SubjectsPage from './SubjectsPage'; // ✅ subjects masterlist
 
 const AdminDashboard = ({ onLogout }) => {
