@@ -5,7 +5,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
   overflow-x: hidden;
-  background: linear-gradient(125deg, rgba(85, 107, 47, 0.85), rgba(107, 142, 35, 0.85), rgba(154, 205, 50, 0.85)), 
+  background: linear-gradient(125deg, rgba(236, 250, 114, 0.85), rgba(54, 119, 16, 0.897), rgba(154, 205, 50, 0.85)), 
               url('../assets/ptc-bg.jpg') center/cover no-repeat;
   display: flex;
   flex-direction: column;
@@ -26,8 +26,8 @@
   flex: 1;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px 20px;
+  margin:  auto;
+  padding: 150px 20px;
 }
 
 /* Left Side - Login Section - SAME SIZE AS INFO CARD */
@@ -597,3 +597,4 @@
   margin-bottom: 4px;
   color: #6c757d;
 }
+

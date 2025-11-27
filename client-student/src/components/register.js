@@ -20,7 +20,6 @@ const Register = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
-  // PTC institutional email validation
   const isValidPTCEmail = (email) => {
     const ptcPattern = /^[a-zA-Z0-9._%+-]+@paterostechnologicalcollege\.edu\.ph$/i;
     return ptcPattern.test(email);
@@ -38,37 +37,58 @@ const Register = () => {
       setError('Student Number is required');
       return false;
     }
-
+    if (formData.student_number.length > 20) {
+      setError('Student Number must be 20 characters or less');
+      return false;
+    }
     if (!formData.first_name.trim() || !formData.last_name.trim()) {
       setError('First name and last name are required');
       return false;
     }
-
+    if (formData.first_name.length > 100 || formData.last_name.length > 100) {
+      setError('First name and last name must be 100 characters or less');
+      return false;
+    }
+    if (formData.middle_name && formData.middle_name.length > 100) {
+      setError('Middle name must be 100 characters or less');
+      return false;
+    }
     if (!isValidPTCEmail(formData.institutional_email)) {
       setError('Valid PTC institutional email is required (@paterostechnologicalcollege.edu.ph)');
       return false;
     }
-
+    if (formData.institutional_email.length > 255) {
+      setError('Email must be 255 characters or less');
+      return false;
+    }
     if (!formData.program_enrolled) {
       setError('Program enrolled is required');
       return false;
     }
-
+    if (formData.program_enrolled.length > 100) {
+      setError('Program name must be 100 characters or less');
+      return false;
+    }
     if (!formData.year_level) {
       setError('Year level is required');
       return false;
     }
-
+    if (formData.year_level.length > 20) {
+      setError('Year level must be 20 characters or less');
+      return false;
+    }
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return false;
     }
-
+    if (formData.password.length > 255) {
+      setError('Password must be 255 characters or less');
+      return false;
+    }
     if (formData.password !== formData.confirm_password) {
       setError('Passwords do not match');
       return false;
     }
-
     return true;
   };
 
@@ -84,7 +104,6 @@ const Register = () => {
     }
 
     try {
-      // Check if student already exists by student_number
       const { data: existingById, error: idError } = await supabase
         .from('institutional_students')
         .select('student_number')
@@ -97,7 +116,6 @@ const Register = () => {
         return;
       }
 
-      // Check if student already exists by email
       const { data: existingByEmail, error: emailError } = await supabase
         .from('institutional_students')
         .select('institutional_email')
@@ -110,7 +128,6 @@ const Register = () => {
         return;
       }
 
-      // Prepare student data for insertion - set enrollment_status to 'active' for immediate access
       const studentData = {
         student_number: formData.student_number,
         first_name: formData.first_name,
@@ -118,19 +135,16 @@ const Register = () => {
         institutional_email: formData.institutional_email,
         program_enrolled: formData.program_enrolled,
         year_level: formData.year_level,
-        enrollment_status: 'active', // Changed to 'active' for immediate access
-        created_by: 'student_registration'
+        enrollment_status: 'active',
+        student_status: 'regular',
+        created_by: 'student_registration',
+        password_hash: formData.password
       };
 
-      // Add optional fields only if they have values
       if (formData.middle_name.trim()) {
         studentData.middle_name = formData.middle_name;
       }
 
-      // Note: Password is validated but not stored (using hardcoded passwords for login)
-      console.log('Password validated but not stored (using system passwords)');
-
-      // Insert new student with active status
       const { data: newStudent, error: insertError } = await supabase
         .from('institutional_students')
         .insert([studentData])
@@ -143,7 +157,6 @@ const Register = () => {
 
       setSuccess('Account created successfully! You can now login to access your dashboard.');
       
-      // Reset form
       setFormData({
         student_number: '',
         first_name: '',
@@ -156,7 +169,6 @@ const Register = () => {
         confirm_password: ''
       });
 
-      // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate('/login');
       }, 3000);
@@ -176,19 +188,14 @@ const Register = () => {
   return (
     <div className="login-container">
       <div className="main-content-wrapper">
-        {/* Left Side - Registration Form */}
         <div className="login-section">
           <div className="login-form-card">
             <div className="logo-space">
               <img src="/logo-ptc.png" alt="PTC LOGO" className="logo" />
             </div>
-
             <div className="login-content">
               <h1>Create Student Account</h1>
-              <p className="login-subtitle">
-                Register for PTC Student Portal Access
-              </p>
-              
+              <p className="login-subtitle">Register for PTC Student Portal Access</p>
               <form onSubmit={handleRegister} className="login-form">
                 <div className="form-group">
                   <input
@@ -197,10 +204,10 @@ const Register = () => {
                     placeholder="Student Number *"
                     value={formData.student_number}
                     onChange={handleChange}
+                    maxLength="20"
                     required
                   />
                 </div>
-
                 <div className="form-row">
                   <div className="form-group">
                     <input
@@ -209,6 +216,7 @@ const Register = () => {
                       placeholder="First Name *"
                       value={formData.first_name}
                       onChange={handleChange}
+                      maxLength="100"
                       required
                     />
                   </div>
@@ -219,10 +227,10 @@ const Register = () => {
                       placeholder="Middle Name"
                       value={formData.middle_name}
                       onChange={handleChange}
+                      maxLength="100"
                     />
                   </div>
                 </div>
-
                 <div className="form-group">
                   <input
                     type="text"
@@ -230,10 +238,10 @@ const Register = () => {
                     placeholder="Last Name *"
                     value={formData.last_name}
                     onChange={handleChange}
+                    maxLength="100"
                     required
                   />
                 </div>
-
                 <div className="form-group">
                   <input
                     type="email"
@@ -241,10 +249,10 @@ const Register = () => {
                     placeholder="institutional@paterostechnologicalcollege.edu.ph *"
                     value={formData.institutional_email}
                     onChange={handleChange}
+                    maxLength="255"
                     required
                   />
                 </div>
-
                 <div className="form-row">
                   <div className="form-group">
                     <select
@@ -276,8 +284,6 @@ const Register = () => {
                     </select>
                   </div>
                 </div>
-
-                {/* Password Fields */}
                 <div className="form-row">
                   <div className="form-group">
                     <input
@@ -286,6 +292,7 @@ const Register = () => {
                       placeholder="Password *"
                       value={formData.password}
                       onChange={handleChange}
+                      maxLength="255"
                       required
                     />
                   </div>
@@ -296,32 +303,30 @@ const Register = () => {
                       placeholder="Confirm Password *"
                       value={formData.confirm_password}
                       onChange={handleChange}
+                      maxLength="255"
                       required
                     />
                   </div>
                 </div>
-
                 <div className="password-requirements">
                   <p><strong>Password Requirements:</strong></p>
                   <ul>
                     <li>At least 6 characters long</li>
+                    <li>Maximum 255 characters</li>
                     <li>Use a combination of letters and numbers</li>
                     <li>Avoid common passwords</li>
                   </ul>
                 </div>
-
                 {error && (
                   <div className="error-message">
                     {error}
                   </div>
                 )}
-
                 {success && (
                   <div className="success-message">
                     {success}
                   </div>
                 )}
-                
                 <button type="submit" disabled={loading} className="login-btn primary-btn">
                   {loading ? (
                     <>
@@ -332,8 +337,6 @@ const Register = () => {
                     'Create Account'
                   )}
                 </button>
-
-                {/* Back to Login Button */}
                 <button 
                   type="button" 
                   onClick={handleLoginRedirect}
@@ -345,59 +348,7 @@ const Register = () => {
             </div>
           </div>
         </div>
-
-        {/* Right Side - Registration Info */}
-        <div className="info-card-section">
-          <div className="info-card">
-            <div className="info-card-content">
-              <h2>Account Registration</h2>
-              <div className="requirements-list">
-                <div className="requirement-item">
-                  <div className="requirement-icon">📝</div>
-                  <div className="requirement-text">
-                    <h3>Required Information</h3>
-                    <p>Provide accurate student information including Student Number, full name, and institutional email.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">✅</div>
-                  <div className="requirement-text">
-                    <h3>Immediate Access</h3>
-                    <p>Once registered, you can login immediately to access your student dashboard.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">🔒</div>
-                  <div className="requirement-text">
-                    <h3>Secure Password</h3>
-                    <p>Create a strong password with at least 6 characters for account security.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">📧</div>
-                  <div className="requirement-text">
-                    <h3>Email Verification</h3>
-                    <p>Use your official PTC institutional email for registration and communication.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="new-student-info">
-                <h3>Already Have an Account?</h3>
-                <p>If you already have a student account, proceed to the login page to access your dashboard.</p>
-                <button 
-                  onClick={handleLoginRedirect}
-                  className="secondary-btn"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-
-      {/* Need Help Footer */}
       <div className="help-footer">
         <div className="help-footer-content">
           <div className="help-info">

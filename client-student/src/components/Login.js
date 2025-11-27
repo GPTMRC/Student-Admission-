@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = ({ setIsAuthenticated, setStudentData }) => {
@@ -23,8 +23,6 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
     setLoading(true);
     setError('');
 
-    console.log('?? LOGIN ATTEMPT STARTED');
-
     // STRICT VALIDATION - Only @paterostechnologicalcollege.edu.ph
     if (!isValidPTCEmail(credentials.institutional_email)) {
       setError('Access restricted to PTC institutional emails only (@paterostechnologicalcollege.edu.ph)');
@@ -46,23 +44,23 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
         return;
       }
 
-      // REMOVED ACCOUNT APPROVAL CHECK - Students can login immediately after registration
-      
-      // SIMPLIFIED PASSWORD CHECK
-      const validPasswords = ['welcome123', 'password123', 'ptc2024', '123456'];
-      
-      if (validPasswords.includes(credentials.password)) {
-        console.log('? LOGIN SUCCESSFUL');
-        
+      // Check enrollment status
+      if (student.enrollment_status !== 'active') {
+        setError('Account is not active. Please contact MIS office for assistance.');
+        setLoading(false);
+        return;
+      }
+
+      // PASSWORD VALIDATION - Check against stored password_hash
+      if (student.password_hash === credentials.password) {
         // Set authentication state
         setIsAuthenticated(true);
         setStudentData(student);
         
-        // MANUAL REDIRECT to dashboard
-        console.log('?? Redirecting to dashboard...');
+        // Redirect to dashboard
         navigate('/dashboard');
       } else {
-        setError(`Invalid password. Try: ${validPasswords.join(', ')}`);
+        setError('Invalid password. Please try again or contact MIS office for password reset.');
       }
 
     } catch (err) {
@@ -76,15 +74,13 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
     navigate('/register');
   };
 
-  // Debug: Log when component re-renders
-  useEffect(() => {
-    console.log('?? Login component rendered');
-  });
-
   return (
     <div className="login-container">
       <div className="main-content-wrapper">
-        {/* Left Side - Login Form */}
+        {/* Spacer to push content down */}
+        <div className="login-spacer"></div>
+        
+        {/* Login Form Container */}
         <div className="login-section">
           <div className="login-form-card">
             <div className="logo-space">
@@ -145,57 +141,10 @@ const Login = ({ setIsAuthenticated, setStudentData }) => {
                 </button>
               </form>
 
-              <div className="test-credentials">
-                <p><strong>Test Login:</strong></p>
-                <p><strong>Email:</strong> juan.delacruz@paterostechnologicalcollege.edu.ph</p>
-                <p><strong>Password:</strong> welcome123</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side - Access Requirements Card */}
-        <div className="info-card-section">
-          <div className="info-card">
-            <div className="info-card-content">
-              <h2>Access Requirements</h2>
-              <div className="requirements-list">
-                <div className="requirement-item">
-                  <div className="requirement-icon">📧</div>
-                  <div className="requirement-text">
-                    <h3>PTC Institutional Email</h3>
-                    <p>Valid @paterostechnologicalcollege.edu.ph email address required for authentication.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">🎓</div>
-                  <div className="requirement-text">
-                    <h3>Active Enrollment Status</h3>
-                    <p>Must be currently enrolled in the current academic semester.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">🔑</div>
-                  <div className="requirement-text">
-                    <h3>Valid Credentials</h3>
-                    <p>Official student ID and proper login credentials provided by the institution.</p>
-                  </div>
-                </div>
-                <div className="requirement-item">
-                  <div className="requirement-icon">📱</div>
-                  <div className="requirement-text">
-                    <h3>Secure Connection</h3>
-                    <p>Access from authorized networks and devices only. Public networks are restricted.</p>
-                  </div>
-                </div>
-                {/* REMOVED ACCOUNT APPROVAL REQUIREMENT */}
-              </div>
-
               {/* New Student Registration Info */}
               <div className="new-student-info">
                 <h3>New to PTC Portal?</h3>
                 <p>First time users can create their student account to access the dashboard and institutional services.</p>
-        
               </div>
             </div>
           </div>
