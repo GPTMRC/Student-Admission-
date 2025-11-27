@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import './SubjectPage.css'; // Import the CSS file
 
 const SubjectsPage = () => {
   const [subjects, setSubjects] = useState([]);
@@ -7,7 +8,7 @@ const SubjectsPage = () => {
   const [error, setError] = useState('');
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [courseFilter, setCourseFilter] = useState(''); // Empty by default
+  const [courseFilter, setCourseFilter] = useState('');
   const [yearFilter, setYearFilter] = useState('all');
   const [semesterFilter, setSemesterFilter] = useState('all');
 
@@ -45,7 +46,7 @@ const SubjectsPage = () => {
     corequisites: ''
   });
 
-  // --- LOAD SUBJECTS ---
+  // Load subjects
   useEffect(() => {
     fetchSubjects();
   }, []);
@@ -98,7 +99,6 @@ const SubjectsPage = () => {
     }));
   };
 
-  // --- SUBMIT ADD / UPDATE ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -186,7 +186,6 @@ const SubjectsPage = () => {
       corequisites: subject.corequisites || ''
     });
 
-    // Scroll to the form
     document.getElementById('subject-form').scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -210,15 +209,12 @@ const SubjectsPage = () => {
     }
   };
 
-  // --- FILTERED SUBJECTS LIST ---
+  // Filtered subjects
   const filteredSubjects = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
 
     return subjects.filter((s) => {
-      // If no course is selected, show nothing
       if (!courseFilter) return false;
-
-      // Filter by selected course
       if (s.course !== courseFilter) return false;
 
       if (
@@ -244,7 +240,7 @@ const SubjectsPage = () => {
     });
   }, [subjects, searchTerm, courseFilter, yearFilter, semesterFilter]);
 
-  // Group subjects by year level and semester for organized display
+  // Group subjects
   const groupedSubjects = useMemo(() => {
     const grouped = {};
     
@@ -260,7 +256,6 @@ const SubjectsPage = () => {
       grouped[key].subjects.push(subject);
     });
 
-    // Sort groups logically
     return Object.values(grouped).sort((a, b) => {
       const yearOrder = yearLevels.map(y => y.value);
       const semOrder = semesters;
@@ -272,7 +267,6 @@ const SubjectsPage = () => {
     });
   }, [filteredSubjects]);
 
-  // Calculate totals for each group
   const calculateGroupTotals = (subjects) => {
     return subjects.reduce((totals, subject) => {
       totals.units += Number(subject.units) || 0;
@@ -284,27 +278,25 @@ const SubjectsPage = () => {
     }, { units: 0, lec_hours: 0, lab_hours: 0, total_hours: 0, subject_count: 0 });
   };
 
-  // Get selected course name
   const selectedCourseName = courses.find(c => c.id === courseFilter)?.name || '';
 
   return (
     <div className="dashboard-card" style={{ marginTop: '0.5rem' }}>
       <div className="card-header">
         <h3>Subjects Masterlist</h3>
-        <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+        <span style={{ fontSize: '0.875rem', color: '#4b5563' }}>
           Select a course to view and manage subjects
         </span>
       </div>
 
-      {/* ERROR */}
       {error && (
-        <div className="no-data" style={{ marginBottom: '0.5rem', color: '#b91c1c' }}>
+        <div className="error-message" style={{ margin: '1rem' }}>
           {error}
         </div>
       )}
 
-      {/* FORM: ADD / EDIT SUBJECT - MOVED TO TOP */}
-      <div id="subject-form" className="dashboard-card micro" style={{ marginBottom: '1rem' }}>
+      {/* Add/Edit Form */}
+      <div id="subject-form" className="dashboard-card micro" style={{ margin: '1.5rem' }}>
         <div className="card-header micro">
           <h3>{editingSubject ? 'Edit Subject' : 'Add New Subject'}</h3>
           {editingSubject && (
@@ -318,22 +310,10 @@ const SubjectsPage = () => {
           )}
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}
-        >
-          {/* Code + Name */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 2fr',
-              gap: '0.5rem',
-            }}
-          >
+        <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">
-                Subject Code *
-              </label>
+              <label className="form-label">Subject Code *</label>
               <input
                 name="subject_code"
                 type="text"
@@ -344,11 +324,8 @@ const SubjectsPage = () => {
                 required
               />
             </div>
-
             <div>
-              <label className="form-label">
-                Subject Name *
-              </label>
+              <label className="form-label">Subject Name *</label>
               <input
                 name="subject_name"
                 type="text"
@@ -361,33 +338,21 @@ const SubjectsPage = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div>
-            <label className="form-label">
-              Description (optional)
-            </label>
+            <label className="form-label">Description (optional)</label>
             <textarea
               name="description"
               className="event-input micro"
-              style={{ minHeight: '60px', resize: 'vertical' }}
+              style={{ minHeight: '100px', resize: 'vertical' }}
               placeholder="Short description of the subject..."
               value={form.description}
               onChange={handleChange}
             />
           </div>
 
-          {/* Course + Year + Sem + Units */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr 1fr',
-              gap: '0.5rem',
-            }}
-          >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">
-                Course *
-              </label>
+              <label className="form-label">Course *</label>
               <select
                 name="course"
                 className="status-select"
@@ -397,17 +362,12 @@ const SubjectsPage = () => {
               >
                 <option value="">Select Course</option>
                 {courses.map(course => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
+                  <option key={course.id} value={course.id}>{course.name}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="form-label">
-                Year Level *
-              </label>
+              <label className="form-label">Year Level *</label>
               <select
                 name="year_level"
                 className="status-select"
@@ -417,17 +377,12 @@ const SubjectsPage = () => {
               >
                 <option value="">Select Year</option>
                 {yearLevels.map(year => (
-                  <option key={year.value} value={year.value}>
-                    {year.label}
-                  </option>
+                  <option key={year.value} value={year.value}>{year.label}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="form-label">
-                Semester *
-              </label>
+              <label className="form-label">Semester *</label>
               <select
                 name="semester"
                 className="status-select"
@@ -440,11 +395,8 @@ const SubjectsPage = () => {
                 ))}
               </select>
             </div>
-
             <div>
-              <label className="form-label">
-                Units *
-              </label>
+              <label className="form-label">Units *</label>
               <input
                 name="units"
                 type="number"
@@ -459,18 +411,9 @@ const SubjectsPage = () => {
             </div>
           </div>
 
-          {/* LEC/LAB + Prerequisites */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr 1fr',
-              gap: '0.5rem',
-            }}
-          >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">
-                LEC Hours
-              </label>
+              <label className="form-label">LEC Hours</label>
               <input
                 name="lec_hours"
                 type="number"
@@ -482,11 +425,8 @@ const SubjectsPage = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div>
-              <label className="form-label">
-                LAB Hours
-              </label>
+              <label className="form-label">LAB Hours</label>
               <input
                 name="lab_hours"
                 type="number"
@@ -498,11 +438,8 @@ const SubjectsPage = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div>
-              <label className="form-label">
-                Prerequisites
-              </label>
+              <label className="form-label">Prerequisites</label>
               <input
                 name="prerequisites"
                 type="text"
@@ -512,11 +449,8 @@ const SubjectsPage = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div>
-              <label className="form-label">
-                Corequisites
-              </label>
+              <label className="form-label">Corequisites</label>
               <input
                 name="corequisites"
                 type="text"
@@ -528,50 +462,46 @@ const SubjectsPage = () => {
             </div>
           </div>
 
-          <div style={{ marginTop: '0.5rem' }}>
-            <button
-              type="submit"
-              className="btn micro btn-primary"
-              disabled={saving}
-            >
-              {saving
-                ? 'Saving...'
-                : editingSubject
-                ? 'Update Subject'
-                : 'Add Subject'}
+          <div style={{ marginTop: '1rem' }}>
+            <button type="submit" className="btn micro btn-primary" disabled={saving}>
+              {saving ? 'Saving...' : editingSubject ? 'Update Subject' : 'Add Subject'}
             </button>
           </div>
         </form>
       </div>
 
-      {/* COURSE SELECTION */}
-      <div className="dashboard-card micro" style={{ marginBottom: '1rem' }}>
+      {/* Course Selection */}
+      <div className="dashboard-card micro" style={{ margin: '1.5rem' }}>
         <div className="card-header micro">
           <h4>Select Course</h4>
         </div>
-        <div style={{ padding: '1rem' }}>
+        <div style={{ padding: '1.5rem' }}>
           <select
             value={courseFilter}
             onChange={(e) => setCourseFilter(e.target.value)}
             className="status-filter"
-            style={{ width: '100%', maxWidth: '400px' }}
+            style={{ width: '100%', maxWidth: '500px' }}
           >
             <option value="">Choose a course to view subjects...</option>
             {courses.map(course => (
-              <option key={course.id} value={course.id}>
-                {course.name}
-              </option>
+              <option key={course.id} value={course.id}>{course.name}</option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* FILTERS - Only show when a course is selected */}
+      {/* Welcome Message */}
+      {!courseFilter && !loading && (
+        <div className="dashboard-card micro welcome-message" style={{ margin: '1.5rem' }}>
+          <div className="emoji-large">📚</div>
+          <h3>Welcome to Subjects Management</h3>
+          <p>Select a course from the dropdown above to view and manage subjects.</p>
+        </div>
+      )}
+
+      {/* Filters */}
       {courseFilter && (
-        <div
-          className="dashboard-controls"
-          style={{ marginBottom: '0.5rem', gap: '1rem' }}
-        >
+        <div className="dashboard-controls" style={{ margin: '0 1.5rem 1rem 1.5rem' }}>
           <div className="search-box">
             <span className="search-icon">🔍</span>
             <input
@@ -581,8 +511,7 @@ const SubjectsPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-
-          <div className="filter-controls" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div className="filter-controls">
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
@@ -590,12 +519,9 @@ const SubjectsPage = () => {
             >
               <option value="all">All Year Levels</option>
               {yearLevels.map(year => (
-                <option key={year.value} value={year.value}>
-                  {year.label}
-                </option>
+                <option key={year.value} value={year.value}>{year.label}</option>
               ))}
             </select>
-
             <select
               value={semesterFilter}
               onChange={(e) => setSemesterFilter(e.target.value)}
@@ -610,31 +536,19 @@ const SubjectsPage = () => {
         </div>
       )}
 
-      {/* WELCOME MESSAGE - When no course is selected */}
-      {!courseFilter && !loading && (
-        <div className="dashboard-card micro" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
-          <h3>Welcome to Subjects Management</h3>
-          <p style={{ color: '#6b7280', fontSize: '1rem', maxWidth: '500px', margin: '0 auto' }}>
-            Select a course from the dropdown above to view and manage subjects. 
-            You can add new subjects using the form at the top.
-          </p>
-        </div>
-      )}
-
-      {/* SUBJECTS DISPLAY - Only show when a course is selected */}
+      {/* Subjects Display */}
       {courseFilter && (
-        <div style={{ marginBottom: '1rem' }}>
+        <div style={{ margin: '0 1.5rem 1.5rem 1.5rem' }}>
           {loading ? (
             <div className="no-data">Loading subjects...</div>
           ) : groupedSubjects.length === 0 ? (
-            <div className="dashboard-card micro" style={{ textAlign: 'center', padding: '2rem' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📝</div>
+            <div className="dashboard-card micro" style={{ textAlign: 'center', padding: '3rem' }}>
+              <div className="emoji-medium">📝</div>
               <h4>No Subjects Found</h4>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+              <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
                 {searchTerm || yearFilter !== 'all' || semesterFilter !== 'all' 
-                  ? 'No subjects match your current filters. Try adjusting your search or filters.'
-                  : `No subjects found for ${selectedCourseName}. Start by adding subjects using the form above.`
+                  ? 'No subjects match your current filters.'
+                  : `No subjects found for ${selectedCourseName}.`
                 }
               </p>
               {(searchTerm || yearFilter !== 'all' || semesterFilter !== 'all') && (
@@ -646,7 +560,7 @@ const SubjectsPage = () => {
                     setYearFilter('all');
                     setSemesterFilter('all');
                   }}
-                  style={{ marginTop: '1rem' }}
+                  style={{ marginTop: '1.5rem' }}
                 >
                   Clear Filters
                 </button>
@@ -654,38 +568,30 @@ const SubjectsPage = () => {
             </div>
           ) : (
             <div>
-              {/* Course Header */}
-              <div className="dashboard-card micro" style={{ marginBottom: '1rem', backgroundColor: '#f0f9ff' }}>
+              <div className="dashboard-card micro course-header-accent" style={{ marginBottom: '1.5rem' }}>
                 <div className="card-header micro">
-                  <h3 style={{ margin: 0, color: '#0369a1' }}>
-                    {selectedCourseName}
-                  </h3>
-                  <span style={{ fontSize: '0.875rem', color: '#4b5563' }}>
+                  <h3 style={{ margin: 0, color: '#1a5632' }}>{selectedCourseName}</h3>
+                  <span style={{ fontSize: '1rem', color: '#4b5563' }}>
                     {filteredSubjects.length} subjects total
                   </span>
                 </div>
               </div>
 
-              {/* Grouped Subjects */}
               {groupedSubjects.map((group, index) => {
                 const totals = calculateGroupTotals(group.subjects);
                 const yearLabel = yearLevels.find(y => y.value === group.year_level.toString())?.label || `${group.year_level} Year`;
                 
                 return (
-                  <div key={index} className="dashboard-card micro" style={{ marginBottom: '1.5rem' }}>
-                    <div className="card-header micro" style={{ backgroundColor: '#f8fafc' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div key={index} className="dashboard-card micro" style={{ marginBottom: '2rem' }}>
+                    <div className="card-header micro group-header">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
                         <div>
-                          <h4 style={{ margin: 0 }}>
-                            {yearLabel} - {group.semester} Semester
-                          </h4>
-                          <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>
-                            {totals.subject_count} subjects • {totals.units} units • {totals.lec_hours} LEC hrs • {totals.lab_hours} LAB hrs
+                          <h4 style={{ margin: 0 }}>{yearLabel} - {group.semester} Semester</h4>
+                          <span style={{ fontSize: '0.9rem', color: '#4b5563' }}>
+                            {totals.subject_count} subjects • {totals.units} units
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#059669' }}>
-                          {totals.units} Units
-                        </div>
+                        <div className="units-display">{totals.units} Units</div>
                       </div>
                     </div>
 
@@ -699,52 +605,37 @@ const SubjectsPage = () => {
                             <th>LEC</th>
                             <th>LAB</th>
                             <th>Prerequisites</th>
-                            <th style={{ width: '120px' }}>Actions</th>
+                            <th style={{ width: '140px' }}>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {group.subjects.map((subject) => (
                             <tr key={subject.id}>
-                              <td>
-                                <strong>{subject.subject_code}</strong>
-                              </td>
+                              <td><strong>{subject.subject_code}</strong></td>
                               <td>
                                 <div>
-                                  <div style={{ fontWeight: '600' }}>{subject.subject_name}</div>
-                                  {subject.description && subject.description !== subject.subject_name && (
-                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                  <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>{subject.subject_name}</div>
+                                  {subject.description && (
+                                    <div style={{ fontSize: '0.9rem', color: '#6b7280', marginTop: '0.25rem' }}>
                                       {subject.description}
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              <td>{subject.units || '—'}</td>
+                              <td style={{ fontWeight: '600' }}>{subject.units || '—'}</td>
                               <td>{subject.lec_hours ?? '—'}</td>
                               <td>{subject.lab_hours ?? '—'}</td>
                               <td>
-                                <span style={{ 
-                                  fontSize: '0.75rem', 
-                                  color: subject.prerequisites && subject.prerequisites !== 'None' ? '#dc2626' : '#6b7280'
-                                }}>
+                                <span style={{ fontSize: '0.9rem', color: subject.prerequisites ? '#dc2626' : '#6b7280' }}>
                                   {subject.prerequisites || 'None'}
                                 </span>
                               </td>
                               <td>
                                 <div className="action-buttons">
-                                  <button
-                                    type="button"
-                                    className="btn-icon"
-                                    title="Edit subject"
-                                    onClick={() => handleEdit(subject)}
-                                  >
+                                  <button type="button" className="btn-icon" onClick={() => handleEdit(subject)}>
                                     ✏️
                                   </button>
-                                  <button
-                                    type="button"
-                                    className="btn-icon btn-delete"
-                                    title="Delete subject"
-                                    onClick={() => handleDelete(subject)}
-                                  >
+                                  <button type="button" className="btn-icon btn-delete" onClick={() => handleDelete(subject)}>
                                     🗑️
                                   </button>
                                 </div>
@@ -761,15 +652,6 @@ const SubjectsPage = () => {
           )}
         </div>
       )}
-
-      <style jsx>{`
-        .form-label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          display: block;
-          marginBottom: 0.25rem;
-        }
-      `}</style>
     </div>
   );
 };
