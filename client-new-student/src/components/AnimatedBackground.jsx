@@ -45,7 +45,7 @@ const AnimatedBackground = ({ children, particleCount = 50 }) => {
         </div>
 
         <div className="welcome-content">
-          <h1>University Admission System</h1>
+          <h1>Unified Online Enrollment and Registrar Transaction System</h1>
           <p className="welcome-subtitle">
             Streamline your application process with our intuitive platform. 
             Get started today or check your existing applications.
