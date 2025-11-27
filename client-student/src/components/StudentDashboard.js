@@ -178,38 +178,6 @@ const navItems = [
 const DashboardHome = ({ studentData, onCORNavigate }) => {
   return (
     <div className="dashboard-home">
-      {/* Statistics Cards */}
-      <div className="stats-container">
-        <div className="stat-card">
-          <div className="stat-icon">📚</div>
-          <div className="stat-info">
-            <h3>Current GPA</h3>
-            <div className="stat-number">1.75</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">📋</div>
-          <div className="stat-info">
-            <h3>Units Enrolled</h3>
-            <div className="stat-number">15</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">⏳</div>
-          <div className="stat-info">
-            <h3>Pending Documents</h3>
-            <div className="stat-number">2</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">✅</div>
-          <div className="stat-info">
-            <h3>Completed Courses</h3>
-            <div className="stat-number">24</div>
-          </div>
-        </div>
-      </div>
-
       {/* Quick Actions */}
       <div className="dashboard-controls">
         <div className="quick-actions">
@@ -381,30 +349,6 @@ const AcademicSection = ({ studentData }) => {
 
   return (
     <div className="section-content">
-      <div className="stats-container">
-        <div className="stat-card">
-          <div className="stat-icon">📊</div>
-          <div className="stat-info">
-            <h3>Current GPA</h3>
-            <div className="stat-number">1.75</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">📚</div>
-          <div className="stat-info">
-            <h3>Units Completed</h3>
-            <div className="stat-number">85</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">🎯</div>
-          <div className="stat-info">
-            <h3>Remaining Units</h3>
-            <div className="stat-number">35</div>
-          </div>
-        </div>
-      </div>
-
       <div className="applications-table-container">
         <div className="table-header">
           <h3>Academic Documents</h3>
