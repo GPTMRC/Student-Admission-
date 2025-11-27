@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
-import Register from './components/register'; // Change to lowercase
+import register from './components/register'; // Change to lowercase
 import StudentDashboard from './components/StudentDashboard';
 import AnimatedBackground from './components/AnimatedBackground';
 import './App.css';
