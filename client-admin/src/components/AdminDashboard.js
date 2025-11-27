@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
-import StudentAdvisingPage from './StudentAdvisingPage'; // ✅ component import
-import SubjectsPage from './SubjectsPage'; // ✅ subjects masterlist
+import StudentAdvisingPage from './StudentAdvisingPage';
+import SubjectsPage from './SubjectsPage';
 
 const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
@@ -423,7 +423,7 @@ const AdminDashboard = ({ onLogout }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'applications', label: 'Applications', icon: '📰' },
-    { id: 'studentAdvising', label: 'Student Advising', icon: '🎓' }, // ✅ Profile icon for advising
+    { id: 'studentAdvising', label: 'Student Advising', icon: '🎓' },
     { id: 'subjects', label: 'Subjects', icon: '📚' },
     { id: 'exams', label: 'Exams', icon: '✓' },
     { id: 'reports', label: 'Reports', icon: '📉' },
@@ -530,159 +530,9 @@ const AdminDashboard = ({ onLogout }) => {
           {/* DASHBOARD SECTION */}
           {activeSection === 'dashboard' && (
             <div className="dashboard-grid swapped-layout">
-              {/* Top Row: Quick Stats and To-Do */}
+              {/* Top Row: Calendar and To-Do */}
               <div className="dashboard-row top-row">
-                {/* Micro Quick Stats */}
-                <div className="dashboard-card quick-stats micro">
-                  <div className="card-header micro">
-                    <h3>Overview</h3>
-                    <span className="last-updated micro">
-                      Updated just now
-                    </span>
-                  </div>
-                  <div className="stats-grid micro">
-                    <div className="stat-item micro">
-                      <div className="stat-icon-wrapper micro">
-                        <span className="stat-icon">📋</span>
-                      </div>
-                      <div className="stat-content micro">
-                        <span className="stat-number micro">
-                          {applications.length}
-                        </span>
-                        <span className="stat-label micro">Total Apps</span>
-                      </div>
-                    </div>
-                    <div className="stat-item micro">
-                      <div className="stat-icon-wrapper micro">
-                        <span className="stat-icon">🗓️</span>
-                      </div>
-                      <div className="stat-content micro">
-                        <span className="stat-number micro">
-                          {
-                            applications.filter(
-                              (app) => app.status === 'scheduled'
-                            ).length
-                          }
-                        </span>
-                        <span className="stat-label micro">Scheduled</span>
-                      </div>
-                    </div>
-                    <div className="stat-item micro">
-                      <div className="stat-icon-wrapper micro">
-                        <span className="stat-icon">⏳</span>
-                      </div>
-                      <div className="stat-content micro">
-                        <span className="stat-number micro">
-                          {
-                            applications.filter(
-                              (app) =>
-                                !app.status || app.status === 'submitted'
-                            ).length
-                          }
-                        </span>
-                        <span className="stat-label micro">Pending</span>
-                      </div>
-                    </div>
-                    <div className="stat-item micro">
-                      <div className="stat-icon-wrapper micro">
-                        <span className="stat-icon">✅</span>
-                      </div>
-                      <div className="stat-content micro">
-                        <span className="stat-number micro">
-                          {
-                            applications.filter(
-                              (app) => app.status === 'completed'
-                            ).length
-                          }
-                        </span>
-                        <span className="stat-label micro">Completed</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Micro To-Do List - Now in top row */}
-                <div className="dashboard-card todo-section micro">
-                  <div className="card-header micro">
-                    <h3>To-Do</h3>
-                    <div className="todo-header-actions micro">
-                      <span className="todo-count micro">
-                        {todos.filter((todo) => !todo.completed).length}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Micro Todo Input */}
-                  <div className="todo-form micro">
-                    <input
-                      type="text"
-                      placeholder="Add a task..."
-                      value={newTodo}
-                      onChange={(e) => setNewTodo(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-                      className="todo-input micro"
-                    />
-                    <button
-                      onClick={addTodo}
-                      className="btn btn-primary micro"
-                    >
-                      Add
-                    </button>
-                  </div>
-
-                  <div className="todo-list micro">
-                    {todos.length === 0 ? (
-                      <div className="no-todos micro">
-                        <div className="no-todos-icon micro">📝</div>
-                        <p>No tasks yet</p>
-                      </div>
-                    ) : (
-                      <div className="todos-container micro">
-                        {todos.slice(0, 4).map((todo) => (
-                          <div key={todo.id} className="todo-item micro">
-                            <label className="todo-checkbox micro">
-                              <input
-                                type="checkbox"
-                                checked={todo.completed}
-                                onChange={() => toggleTodo(todo.id)}
-                              />
-                              <span
-                                className={`todo-text micro ${
-                                  todo.completed ? 'completed' : ''
-                                }`}
-                              >
-                                {todo.text}
-                              </span>
-                            </label>
-                            <button
-                              onClick={() => deleteTodo(todo.id)}
-                              className="btn-icon btn-delete micro"
-                              title="Delete task"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {todos.some((todo) => todo.completed) && (
-                    <div className="todo-actions micro">
-                      <button
-                        onClick={clearCompletedTodos}
-                        className="btn-text micro"
-                      >
-                        Clear Completed
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Middle Row: Calendar */}
-              <div className="dashboard-row middle-row">
-                {/* Micro Calendar */}
+                {/* Micro Calendar with Label */}
                 <div className="dashboard-card calendar-section micro">
                   <div className="card-header micro">
                     <div className="calendar-header-micro">
@@ -714,6 +564,12 @@ const AdminDashboard = ({ onLogout }) => {
                         +
                       </button>
                     </div>
+                  </div>
+
+                  {/* Calendar Label */}
+                  <div className="calendar-label">
+                    <span className="calendar-label-text">Academic Calendar</span>
+                    <span className="calendar-label-badge live">Live</span>
                   </div>
 
                   <div className="calendar micro">
@@ -800,6 +656,84 @@ const AdminDashboard = ({ onLogout }) => {
                     </div>
                   )}
                 </div>
+
+                {/* Micro To-Do List */}
+                <div className="dashboard-card todo-section micro">
+                  <div className="card-header micro">
+                    <h3>To-Do</h3>
+                    <div className="todo-header-actions micro">
+                      <span className="todo-count micro">
+                        {todos.filter((todo) => !todo.completed).length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Micro Todo Input */}
+                  <div className="todo-form micro">
+                    <input
+                      type="text"
+                      placeholder="Add a task..."
+                      value={newTodo}
+                      onChange={(e) => setNewTodo(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+                      className="todo-input micro"
+                    />
+                    <button
+                      onClick={addTodo}
+                      className="btn btn-primary micro"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div className="todo-list micro">
+                    {todos.length === 0 ? (
+                      <div className="no-todos micro">
+                        <div className="no-todos-icon micro">📝</div>
+                        <p>No tasks yet</p>
+                      </div>
+                    ) : (
+                      <div className="todos-container micro">
+                        {todos.slice(0, 4).map((todo) => (
+                          <div key={todo.id} className="todo-item micro">
+                            <label className="todo-checkbox micro">
+                              <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => toggleTodo(todo.id)}
+                              />
+                              <span
+                                className={`todo-text micro ${
+                                  todo.completed ? 'completed' : ''
+                                }`}
+                              >
+                                {todo.text}
+                              </span>
+                            </label>
+                            <button
+                              onClick={() => deleteTodo(todo.id)}
+                              className="btn-icon btn-delete micro"
+                              title="Delete task"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {todos.some((todo) => todo.completed) && (
+                    <div className="todo-actions micro">
+                      <button
+                        onClick={clearCompletedTodos}
+                        className="btn-text micro"
+                      >
+                        Clear Completed
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Bottom Row: Recent Activity - Full Width */}
@@ -847,57 +781,6 @@ const AdminDashboard = ({ onLogout }) => {
           {/* APPLICATIONS SECTION */}
           {activeSection === 'applications' && (
             <>
-              {/* Statistics Cards */}
-              <div className="stats-container">
-                <div className="stat-card">
-                  <div className="stat-icon">📋</div>
-                  <div className="stat-info">
-                    <div className="stat-number">{applications.length}</div>
-                    <div className="stat-label">Total Applications</div>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon">🗓️</div>
-                  <div className="stat-info">
-                    <div className="stat-number">
-                      {
-                        applications.filter(
-                          (app) => app.status === 'scheduled'
-                        ).length
-                      }
-                    </div>
-                    <div className="stat-label">Scheduled</div>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon">⏳</div>
-                  <div className="stat-info">
-                    <div className="stat-number">
-                      {
-                        applications.filter(
-                          (app) =>
-                            !app.status || app.status === 'submitted'
-                        ).length
-                      }
-                    </div>
-                    <div className="stat-label">Pending</div>
-                  </div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon">✅</div>
-                  <div className="stat-info">
-                    <div className="stat-number">
-                      {
-                        applications.filter(
-                          (app) => app.status === 'completed'
-                        ).length
-                      }
-                    </div>
-                    <div className="stat-label">Completed</div>
-                  </div>
-                </div>
-              </div>
-
               <div className="dashboard-controls">
                 <div className="search-box">
                   <span className="search-icon">🔍</span>
@@ -1019,10 +902,10 @@ const AdminDashboard = ({ onLogout }) => {
           {/* SUBJECTS MASTERLIST SECTION */}
           {activeSection === 'subjects' && <SubjectsPage />}
 
-          {/* ✅ STUDENT ADVISING SECTION - Fixed ID to match navigation */}
+          {/* STUDENT ADVISING SECTION */}
           {activeSection === 'studentAdvising' && <StudentAdvisingPage />}
 
-          {/* Placeholder for other sections (students, exams, reports, settings) */}
+          {/* Placeholder for other sections */}
           {activeSection !== 'dashboard' &&
             activeSection !== 'applications' &&
             activeSection !== 'subjects' &&
