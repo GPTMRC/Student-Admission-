@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
-import Register from './components/register'; // Change to lowercase
+import Register from './components/register';
 import StudentDashboard from './components/StudentDashboard';
-import AnimatedBackground from './components/AnimatedBackground';
 import './App.css';
 
 function App() {
@@ -14,20 +13,10 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Homepage with AnimatedBackground */}
-          <Route 
-            path="/" 
-            element={
-              <AnimatedBackground>
-                <div style={{textAlign: 'center', padding: '20px'}}>
-                  <h2>Pateros Technological College Student Portal</h2>
-                  <p>Access your student account using institutional credentials</p>
-                </div>
-              </AnimatedBackground>
-            } 
-          />
+          {/* Redirect root path to login */}
+          <Route path="/" element={<Navigate to="/login" />} />
           
-          {/* Login Page */}
+          {/* Login Page - Now the starting screen */}
           <Route 
             path="/login" 
             element={
@@ -41,7 +30,9 @@ function App() {
           {/* Register Page */}
           <Route 
             path="/register" 
-            element={<Register />} 
+            element={
+              <Register />
+            } 
           />
           
           {/* Student Dashboard (Protected) */}
