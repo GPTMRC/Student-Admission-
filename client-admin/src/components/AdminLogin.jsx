@@ -1,5 +1,5 @@
 // src/components/AdminLogin.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminLogin.css';
 
@@ -7,78 +7,6 @@ const AdminLogin = ({ onLoginSuccess }) => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Minimal particle animation
-  useEffect(() => {
-    const canvas = document.getElementById('particleCanvas');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    const particles = [];
-    const particleCount = 10;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const colors = [
-      'rgba(255, 255, 255, 0.4)',
-      'rgba(248, 250, 252, 0.3)',
-    ];
-
-    class Particle {
-      constructor() {
-        this.reset();
-      }
-
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = -10;
-        this.size = Math.random() * 10 + 5;
-        this.speed = Math.random() * 0.8 + 0.3;
-        this.color = colors[Math.floor(Math.random() * colors.length)];
-      }
-
-      update() {
-        this.y += this.speed;
-        if (this.y > canvas.height + 10) {
-          this.reset();
-        }
-      }
-
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(particle => {
-        particle.update();
-        particle.draw();
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-    };
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -197,91 +125,89 @@ const AdminLogin = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="login-container">
-      <canvas 
-        id="particleCanvas" 
-        className="particle-canvas"
-      />
-      
-      <div className="login-content-wrapper">
-        {/* Left Side - Login Card */}
-        <div className="login-center-wrapper">
-          <div className="login-card">
-            <div className="login-header">
-              <h1 className="login-title">Welcome!</h1>
-              <p className="login-subtitle">Please Enter your admin account to acces the dashboard</p>
+    <div className="admin-login-container">
+      <div className="admin-login-content">
+        <div className="admin-login-card">
+          {/* Logo Slot */}
+          <div className="admin-logo-slot">
+            {/* Add your logo image here */}
+             <img src="logo-ptc.png" alt="PTC Logo" className="admin-logo-image" />
+          </div>
+
+          <div className="admin-login-header">
+            <h1 className="admin-login-title">Admin Login</h1>
+            <p className="admin-login-subtitle">Pateros Technological College</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="admin-login-form" noValidate>
+            {error && (
+              <div className={`admin-error-message ${error.includes('already exists') || error.includes('successfully') ? 'admin-success-message' : ''}`} role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="admin-form-group">
+              <input
+                type="email"
+                name="email"
+                value={loginData.email}
+                onChange={handleInputChange}
+                placeholder="Email address"
+                disabled={loading}
+                required
+                className="admin-input"
+              />
             </div>
 
-            <form onSubmit={handleLogin} className="login-form" noValidate>
-              {error && (
-                <div className={`error-message ${error.includes('already exists') || error.includes('successfully') ? 'success-message' : ''}`} role="alert">
-                  {error}
-                </div>
+            <div className="admin-form-group">
+              <input
+                type="password"
+                name="password"
+                value={loginData.password}
+                onChange={handleInputChange}
+                placeholder="Enter your password"
+                disabled={loading}
+                required
+                className="admin-input"
+              />
+            </div>
+
+            <button type="submit" className="admin-login-button" disabled={loading}>
+              {loading ? (
+                <>
+                  <div className="admin-loading-spinner"></div>
+                  Signing In...
+                </>
+              ) : (
+                'Sign In to Dashboard'
               )}
+            </button>
 
-              <div className="form-group">
-                <input
-                  type="email"
-                  name="email"
-                  value={loginData.email}
-                  onChange={handleInputChange}
-                  placeholder="Email address"
-                  disabled={loading}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <input
-                  type="password"
-                  name="password"
-                  value={loginData.password}
-                  onChange={handleInputChange}
-                  placeholder="Password"
-                  disabled={loading}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="login-button" disabled={loading}>
-                {loading ? (
-                  <>
-                    <div className="loading-spinner-small"></div>
-                    Signing In...
-                  </>
-                ) : (
-                  'Sign In to Dashboard'
-                )}
+            <div className="admin-button-group">
+              <button 
+                type="button" 
+                onClick={handleDemoLogin} 
+                disabled={loading}
+                className="admin-demo-button"
+              >
+                Use Demo Credentials
               </button>
 
-              <div className="button-group">
-                <button 
-                  type="button" 
-                  onClick={handleDemoLogin} 
-                  disabled={loading}
-                  className="demo-button"
-                >
-                  Use Demo Credentials
-                </button>
+              <button 
+                type="button" 
+                onClick={createDefaultAdmin} 
+                disabled={loading}
+                className="admin-create-button"
+              >
+                Create Admin Account
+              </button>
+            </div>
+          </form>
 
-                <button 
-                  type="button" 
-                  onClick={createDefaultAdmin} 
-                  disabled={loading}
-                  className="create-admin-button"
-                >
-                  Create Admin Account
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Right Side - Text Container */}
-        <div className="text-container">
-          <div className="text-content">
-            <h1>PTC Admin Portal</h1>
-            <h2>Manage Your Institution with Ease</h2>
+          <div className="admin-login-footer">
+            <p className="admin-footer-text">
+              <strong>New to PTC Portal?</strong> First time users can create their admin account to access the dashboard and institutional services.
+            </p>
           </div>
         </div>
       </div>

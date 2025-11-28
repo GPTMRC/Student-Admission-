@@ -47,18 +47,17 @@ const StudentDashboard = ({ studentData }) => {
     );
   }
 
-const navItems = [
-  { id: 'dashboard', label: 'Dashboard', lineIcon: '◉' },
-  { id: 'academics', label: 'Academic Records', lineIcon: '📓' },
-  { id: 'documents', label: 'Online Documents', lineIcon: '📄' },
-  { id: 'cor', label: 'COR Generator', lineIcon: '🎓' },
-  { id: 'scheduler', label: 'Request Scheduler', lineIcon: '📅' },
-  { id: 'applications', label: 'Applications', lineIcon: '📋' },
-  { id: 'profile', label: 'My Profile', lineIcon: '👤' },
-  { id: 'settings', label: 'Account Settings', lineIcon: '⚙️' },
-  { id: 'resources', label: 'Campus Resources', lineIcon: '🏛️' },
-];
-
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', lineIcon: '◉' },
+    { id: 'academics', label: 'Academic Records', lineIcon: '📓' },
+    { id: 'documents', label: 'Online Documents', lineIcon: '📄' },
+    { id: 'cor', label: 'COR Generator', lineIcon: '🎓' },
+    { id: 'scheduler', label: 'Request Scheduler', lineIcon: '📅' },
+    { id: 'applications', label: 'Applications', lineIcon: '📋' },
+    { id: 'profile', label: 'My Profile', lineIcon: '👤' },
+    { id: 'settings', label: 'Account Settings', lineIcon: '⚙️' },
+    { id: 'resources', label: 'Campus Resources', lineIcon: '🏛️' },
+  ];
 
   return (
     <div className="admin-dashboard">
@@ -174,7 +173,7 @@ const navItems = [
   );
 };
 
-// Dashboard Home Component with Combined Student Profile and Recent Activity
+// Dashboard Home Component with Rearranged Cards
 const DashboardHome = ({ studentData, onCORNavigate }) => {
   return (
     <div className="dashboard-home">
@@ -193,132 +192,83 @@ const DashboardHome = ({ studentData, onCORNavigate }) => {
         </div>
       </div>
 
-      {/* Combined Student Profile with Recent Activity */}
+      {/* Rearranged Student Profile Cards */}
       <div className="applications-table-container">
         <div className="table-header">
-          <h3>Student Profile & Recent Activity</h3>
+          <h3>Student Dashboard</h3>
         </div>
-        <div className="student-profile-activity-grid">
-          {/* Student Information Column */}
-          <div className="student-info-column">
-            {/* Personal Info Card */}
-            <div className="student-info-card">
+        <div className="student-dashboard-grid">
+          {/* Personal Info Card */}
+          <div className="dashboard-card personal-info-card">
+            <div className="card-header">
               <h4>👤 Personal Information</h4>
-              <div className="info-grid-compact">
-                <div className="info-row">
-                  <div className="info-row-label">Student ID</div>
-                  <div className="info-row-value">{studentData.student_number}</div>
-                </div>
-                <div className="info-row">
-                  <div className="info-row-label">Full Name</div>
-                  <div className="info-row-value">
-                    {studentData.first_name} {studentData.middle_name || ''} {studentData.last_name}
-                  </div>
-                </div>
-                <div className="info-row">
-                  <div className="info-row-label">Email</div>
-                  <div className="info-row-value email-value email-compact">
-                    {studentData.institutional_email}
-                  </div>
+            </div>
+            <div className="info-grid-compact">
+              <div className="info-row">
+                <div className="info-row-label">Student ID</div>
+                <div className="info-row-value">{studentData.student_number}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-row-label">Full Name</div>
+                <div className="info-row-value">
+                  {studentData.first_name} {studentData.middle_name || ''} {studentData.last_name}
                 </div>
               </div>
-            </div>
-
-            {/* Academic Info Card */}
-            <div className="student-info-card">
-              <h4>🎓 Academic Information</h4>
-              <div className="info-grid-compact">
-                <div className="info-row">
-                  <div className="info-row-label">Program</div>
-                  <div className="info-row-value">{studentData.program_enrolled}</div>
-                </div>
-                <div className="info-row">
-                  <div className="info-row-label">Year Level</div>
-                  <div className="info-row-value">{studentData.year_level}</div>
-                </div>
-                <div className="info-row">
-                  <div className="info-row-label">Status</div>
-                  <div className="info-row-value">
-                    <span className={`status-badge ${studentData.enrollment_status === 'Active' ? 'status-completed' : 'status-rejected'}`}>
-                      {studentData.enrollment_status}
-                    </span>
-                  </div>
+              <div className="info-row">
+                <div className="info-row-label">Email</div>
+                <div className="info-row-value email-value email-compact">
+                  {studentData.institutional_email}
                 </div>
               </div>
-            </div>
-
-            {/* Academic Stats Card */}
-            <div className="student-info-card">
-              <h4>📊 Academic Summary</h4>
-              <div className="academic-quick-stats">
-                <div className="academic-stat-item">
-                  <div className="academic-stat-value">1.75</div>
-                  <div className="academic-stat-label">Current GPA</div>
-                </div>
-                <div className="academic-stat-item">
-                  <div className="academic-stat-value">85</div>
-                  <div className="academic-stat-label">Units Completed</div>
-                </div>
-                <div className="academic-stat-item">
-                  <div className="academic-stat-value">15</div>
-                  <div className="academic-stat-label">Current Units</div>
+              <div className="info-row">
+                <div className="info-row-label">Enrollment Status</div>
+                <div className="info-row-value">
+                  <span className={`status-badge ${studentData.enrollment_status === 'Active' ? 'status-completed' : 'status-rejected'}`}>
+                    {studentData.enrollment_status}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Recent Activities Column */}
-          <div className="recent-activities-column">
-            <div className="student-info-card">
-              <h4>📈 Recent Activities</h4>
-              <div className="recent-activities-list">
-                <div className="activity-item">
-                  <div className="activity-icon">📊</div>
-                  <div className="activity-content">
-                    <div className="activity-title">Midterm Grades Posted</div>
-                    <div className="activity-date">2024-01-15</div>
-                    <div className="activity-status">
-                      <span className="status-badge status-completed">Completed</span>
-                    </div>
-                    <div className="activity-details">All subjects updated with midterm grades</div>
-                  </div>
-                </div>
-                
-                <div className="activity-item">
-                  <div className="activity-icon">📄</div>
-                  <div className="activity-content">
-                    <div className="activity-title">COR Generation</div>
-                    <div className="activity-date">2024-01-10</div>
-                    <div className="activity-status">
-                      <span className="status-badge status-completed">Available</span>
-                    </div>
-                    <div className="activity-details">Certificate of Registration ready for download</div>
-                  </div>
-                </div>
-                
-                <div className="activity-item">
-                  <div className="activity-icon">📚</div>
-                  <div className="activity-content">
-                    <div className="activity-title">Library Book Return</div>
-                    <div className="activity-date">2024-01-08</div>
-                    <div className="activity-status">
-                      <span className="status-badge status-scheduled">Pending</span>
-                    </div>
-                    <div className="activity-details">Due in 3 days - "Advanced Calculus"</div>
-                  </div>
-                </div>
-                
-                <div className="activity-item">
-                  <div className="activity-icon">💳</div>
-                  <div className="activity-content">
-                    <div className="activity-title">Tuition Payment</div>
-                    <div className="activity-date">2024-01-05</div>
-                    <div className="activity-status">
-                      <span className="status-badge status-completed">Processed</span>
-                    </div>
-                    <div className="activity-details">Payment confirmed for Spring 2024</div>
-                  </div>
-                </div>
+          {/* Academic Info Card */}
+          <div className="dashboard-card academic-info-card">
+            <div className="card-header">
+              <h4>🎓 Academic Information</h4>
+            </div>
+            <div className="info-grid-compact">
+              <div className="info-row">
+                <div className="info-row-label">Program</div>
+                <div className="info-row-value">{studentData.program_enrolled}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-row-label">Year Level</div>
+                <div className="info-row-value">{studentData.year_level}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-row-label">Current Semester</div>
+                <div className="info-row-value">Spring 2024</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Academic Stats Card */}
+          <div className="dashboard-card stats-card">
+            <div className="card-header">
+              <h4>📊 Academic Summary</h4>
+            </div>
+            <div className="academic-quick-stats">
+              <div className="academic-stat-item">
+                <div className="academic-stat-value">1.75</div>
+                <div className="academic-stat-label">Current GPA</div>
+              </div>
+              <div className="academic-stat-item">
+                <div className="academic-stat-value">85</div>
+                <div className="academic-stat-label">Units Completed</div>
+              </div>
+              <div className="academic-stat-item">
+                <div className="academic-stat-value">15</div>
+                <div className="academic-stat-label">Current Units</div>
               </div>
             </div>
           </div>
@@ -556,7 +506,7 @@ const ApplicationsSection = () => (
   </div>
 );
 
-// Profile Section Component
+// Profile Section Component - Minimalist with Centered Header
 const ProfileSection = ({ studentData }) => (
   <div className="section-content">
     <div className="applications-table-container">
@@ -565,40 +515,55 @@ const ProfileSection = ({ studentData }) => (
         <p>View and manage your personal information</p>
       </div>
       <div className="profile-editor">
-        <div className="profile-header">
+        <div className="profile-header-centered">
           <div className="admin-avatar large">
             {studentData.first_name?.[0]}{studentData.last_name?.[0]}
           </div>
-          <div className="profile-info">
+          <div className="profile-info-centered">
             <h3>{studentData.first_name} {studentData.last_name}</h3>
             <p>{studentData.student_number}</p>
+            <span className={`status-badge ${studentData.enrollment_status === 'Active' ? 'status-completed' : 'status-rejected'}`}>
+              {studentData.enrollment_status}
+            </span>
           </div>
         </div>
         
         <div className="info-grid">
           <div className="info-item">
-            <label>First Name:</label>
+            <label>First Name</label>
             <span>{studentData.first_name}</span>
           </div>
           <div className="info-item">
-            <label>Last Name:</label>
+            <label>Last Name</label>
             <span>{studentData.last_name}</span>
           </div>
           <div className="info-item">
-            <label>Student Number:</label>
+            <label>Middle Name</label>
+            <span>{studentData.middle_name || 'N/A'}</span>
+          </div>
+          <div className="info-item">
+            <label>Student Number</label>
             <span>{studentData.student_number}</span>
           </div>
           <div className="info-item">
-            <label>Program:</label>
+            <label>Program</label>
             <span>{studentData.program_enrolled}</span>
           </div>
           <div className="info-item">
-            <label>Year Level:</label>
+            <label>Year Level</label>
             <span>{studentData.year_level}</span>
           </div>
           <div className="info-item">
-            <label>Email:</label>
+            <label>Email</label>
             <span>{studentData.institutional_email}</span>
+          </div>
+          <div className="info-item">
+            <label>Enrollment Status</label>
+            <span>
+              <span className={`status-badge ${studentData.enrollment_status === 'Active' ? 'status-completed' : 'status-rejected'}`}>
+                {studentData.enrollment_status}
+              </span>
+            </span>
           </div>
         </div>
         
