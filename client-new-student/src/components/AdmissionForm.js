@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import FileUpload from './FileUpload';
 import './AdmissionForm.css';
 
 const AdmissionForm = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: '',
     middle_name: '',
@@ -31,13 +29,15 @@ const AdmissionForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [showSummary, setShowSummary] = useState(false);
+  const [summaryExamScheduleISO, setSummaryExamScheduleISO] = useState(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4001';
 
   const programs = [
     'Bachelor of Science in Information Technology',
-    'Bachelor of Science in office Administration',
-    'Certificate in office Administration',
+    'Bachelor of Science in Office Administration',
+    'Certificate in Office Administration',
     'Certificate of Computer Science',
   ];
 
@@ -107,10 +107,6 @@ const AdmissionForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  /**
-   * sendEmailConfirmation
-   * Returns: { success: boolean, error?: string, payload?: any, raw?: string }
-   */
   const sendEmailConfirmation = async (admissionData) => {
     try {
       const studentName = `${admissionData.first_name} ${admissionData.middle_name ? admissionData.middle_name + ' ' : ''}${admissionData.last_name}`;
@@ -129,7 +125,6 @@ const AdmissionForm = () => {
         }),
       });
 
-      // Read text first to handle non-JSON responses safely
       const text = await resp.text().catch(() => '');
       let json;
       try { json = text ? JSON.parse(text) : null; } catch (err) { json = null; }
@@ -139,20 +134,16 @@ const AdmissionForm = () => {
         return { success: false, error: `Server ${resp.status}: ${json?.message || text || resp.statusText}`, raw: text, payload: json };
       }
 
-      // OK status
       if (!json) {
-        // Server returned 200 but not JSON
         console.warn('⚠️ /send-confirmation returned non-JSON response:', text);
         return { success: false, error: 'Non-JSON response from server', raw: text };
       }
 
-      // If JSON has success boolean
       if (typeof json.success === 'boolean') {
         if (json.success) return { success: true, payload: json };
         return { success: false, error: json.message || 'Email API reported failure', payload: json };
       }
 
-      // Unexpected JSON shape but treat as success if present
       return { success: true, payload: json };
 
     } catch (error) {
@@ -161,10 +152,6 @@ const AdmissionForm = () => {
     }
   };
 
-  /**
-   * testBackendConnection
-   * returns boolean (true if backend responded with success or 200)
-   */
   const testBackendConnection = async () => {
     try {
       const resp = await fetch(`${API_BASE_URL}/test-frontend-connection`, {
@@ -188,12 +175,10 @@ const AdmissionForm = () => {
         return false;
       }
 
-      // If JSON has { success: true/false } prefer that
       if (json && typeof json.success === 'boolean') {
         return json.success;
       }
 
-      // Otherwise treat a 200 OK as success
       return true;
     } catch (error) {
       console.error('❌ Backend connection test failed:', error);
@@ -205,14 +190,12 @@ const AdmissionForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Validate form before submission
     if (!validateForm()) {
       alert('Please fill in all required fields and upload all documents.');
       setLoading(false);
       return;
     }
 
-    // Test backend connection first
     const connectionOk = await testBackendConnection();
     if (!connectionOk) {
       alert('⚠️ Cannot connect to server. Please try again later. (Check backend is running on ' + API_BASE_URL + ')');
@@ -220,12 +203,23 @@ const AdmissionForm = () => {
       return;
     }
 
-    try {
-      // Set exam schedule to 7 days from now
-      const examSchedule = new Date();
-      examSchedule.setDate(examSchedule.getDate() + 7);
+    const examSchedule = new Date();
+    examSchedule.setDate(examSchedule.getDate() + 7);
+    setSummaryExamScheduleISO(examSchedule.toISOString());
+    setShowSummary(true);
+    setLoading(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-      // Insert into Supabase
+  const submitConfirmed = async () => {
+    setShowSummary(false);
+    setLoading(true);
+
+    try {
+      const examScheduleISO = summaryExamScheduleISO || (() => {
+        const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString();
+      })();
+
       const { data, error } = await supabase
         .from('student_admissions')
         .insert([
@@ -250,7 +244,7 @@ const AdmissionForm = () => {
             good_moral_cert: formData.good_moral_cert,
             form_138: formData.form_138,
             graduation_cert: formData.graduation_cert,
-            exam_schedule: examSchedule.toISOString(),
+            exam_schedule: examScheduleISO,
             submitted_at: new Date().toISOString()
           }
         ])
@@ -263,22 +257,19 @@ const AdmissionForm = () => {
         return;
       }
 
-      // Send email confirmation — new return object handled
       const emailResult = await sendEmailConfirmation({
         ...formData,
-        exam_schedule: examSchedule.toISOString()
+        exam_schedule: examScheduleISO
       });
 
       if (emailResult.success) {
         alert('✅ Application submitted successfully! Exam schedule sent to your email.');
       } else {
-        // Informative alert + point to console for diagnostics
         console.warn('Email send failed details:', emailResult);
         const serverMsg = emailResult.error ? ` (${emailResult.error})` : '';
         alert('⚠️ Application submitted but email failed to send. Check console / server logs' + serverMsg);
       }
 
-      // Reset form
       setFormData({
         first_name: '',
         middle_name: '',
@@ -302,8 +293,12 @@ const AdmissionForm = () => {
         graduation_cert: ''
       });
 
-      // Navigate to applications page
-      navigate('/applications');
+      setFormErrors({});
+      setSummaryExamScheduleISO(null);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const firstInput = document.querySelector('input[name="first_name"]');
+      if (firstInput) firstInput.focus();
 
     } catch (error) {
       console.error('❌ General error:', error);
@@ -344,7 +339,7 @@ const AdmissionForm = () => {
                   name="first_name" 
                   value={formData.first_name} 
                   onChange={handleInputChange}
-                  className={formErrors.first_name ? 'error' : ''}
+                  className={formErrors.first_name ? 'error' : ''} 
                   placeholder="Enter first name"
                 />
                 {formErrors.first_name && <span className="error-text">{formErrors.first_name}</span>}
@@ -673,6 +668,163 @@ const AdmissionForm = () => {
           </div>
         </form>
       </div>
+
+      {/* Summary Modal */}
+      {showSummary && (
+        <div className="modal-overlay" role="dialog" aria-modal="true">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Review Application Before Sending</h3>
+              <p>Please review the summary below. If everything looks correct click <strong>Confirm & Send</strong>. Click <strong>Back</strong> to return to the form and make changes.</p>
+            </div>
+
+            <div className="modal-body">
+              <div className="summary-section">
+                <h4 className="summary-section-title">Personal Information</h4>
+                <div className="summary-grid">
+                  <div className="summary-row">
+                    <div className="summary-label">Full Name:</div>
+                    <div className="summary-value">{`${formData.first_name} ${formData.middle_name ? formData.middle_name + ' ' : ''}${formData.last_name}`}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Email:</div>
+                    <div className="summary-value">{formData.email}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Birthday / Sex:</div>
+                    <div className="summary-value">{formData.birthday} / {formData.sex}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Contact Number:</div>
+                    <div className="summary-value">{formData.contact_number}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Address:</div>
+                    <div className="summary-value">{formData.address}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <h4 className="summary-section-title">Emergency Contact</h4>
+                <div className="summary-grid">
+                  <div className="summary-row">
+                    <div className="summary-label">Emergency Contact:</div>
+                    <div className="summary-value">{formData.emergency_contact_name} — {formData.emergency_contact_number}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <h4 className="summary-section-title">Educational Background</h4>
+                <div className="summary-grid">
+                  <div className="summary-row">
+                    <div className="summary-label">Education:</div>
+                    <div className="summary-value">JHS: {formData.junior_high_school} | SHS: {formData.senior_high_school}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Program / Year:</div>
+                    <div className="summary-value">{formData.desired_program} — {formData.year_level}</div>
+                  </div>
+
+                  <div className="summary-row">
+                    <div className="summary-label">Student Type:</div>
+                    <div className="summary-value">{formData.student_type}{formData.student_type === 'Transferee' ? ` — ${formData.last_school_attended}` : ''}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <h4 className="summary-section-title">Examination Schedule</h4>
+                <div className="summary-grid">
+                  <div className="summary-row">
+                    <div className="summary-label">Exam Date & Time:</div>
+                    <div className="summary-value">
+                      {summaryExamScheduleISO ? new Date(summaryExamScheduleISO).toLocaleString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) : 'Not scheduled'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="documents-summary">
+                <strong>Uploaded Documents</strong>
+                <div className="documents-list">
+                  <div className="document-item">
+                    <div className={`document-status-icon ${formData.picture_2x2 ? 'uploaded' : 'missing'}`}>
+                      {formData.picture_2x2 ? '✓' : '!'}
+                    </div>
+                    <div className="document-name">2x2 ID Picture</div>
+                  </div>
+                  <div className="document-item">
+                    <div className={`document-status-icon ${formData.good_moral_cert ? 'uploaded' : 'missing'}`}>
+                      {formData.good_moral_cert ? '✓' : '!'}
+                    </div>
+                    <div className="document-name">Good Moral Certificate</div>
+                  </div>
+                  <div className="document-item">
+                    <div className={`document-status-icon ${formData.form_138 ? 'uploaded' : 'missing'}`}>
+                      {formData.form_138 ? '✓' : '!'}
+                    </div>
+                    <div className="document-name">Form 138 (Report Card)</div>
+                  </div>
+                  <div className="document-item">
+                    <div className={`document-status-icon ${formData.graduation_cert ? 'uploaded' : 'missing'}`}>
+                      {formData.graduation_cert ? '✓' : '!'}
+                    </div>
+                    <div className="document-name">Graduation Certificate</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                onClick={() => setShowSummary(false)}
+                className="modal-btn back"
+              >
+                Back to Form
+              </button>
+
+              <button
+                type="button"
+                onClick={submitConfirmed}
+                disabled={loading}
+                className="modal-btn confirm"
+              >
+                {loading ? (
+                  <>
+                    <div className="modal-loading-spinner" style={{display: 'inline-block', width: '16px', height: '16px', marginRight: '8px'}}></div>
+                    SENDING...
+                  </>
+                ) : (
+                  'Confirm & Send Application'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <div className="loading-text">Processing your application...</div>
+        </div>
+      )}
     </div>
   );
 };
