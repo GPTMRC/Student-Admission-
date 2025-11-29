@@ -35,18 +35,10 @@ const AdmissionForm = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4001';
 
   const programs = [
-    'Bachelor of Science in Computer Science',
     'Bachelor of Science in Information Technology',
-    'Bachelor of Science in Computer Engineering',
-    'Bachelor of Science in Electrical Engineering',
-    'Bachelor of Science in Mechanical Engineering',
-    'Bachelor of Science in Civil Engineering',
-    'Bachelor of Science in Business Administration',
-    'Bachelor of Science in Accountancy',
-    'Bachelor of Elementary Education',
-    'Bachelor of Secondary Education',
-    'Bachelor of Science in Nursing',
-    'Bachelor of Science in Psychology'
+    'Bachelor of Science in office Administration',
+    'Certificate in office Administration',
+    'Certificate of Computer Science',
   ];
 
   const handleInputChange = (e) => {

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
+  
 import StudentAdvisingPage from './StudentAdvisingPage';
 import SubjectsPage from './SubjectsPage';
+import ExamSection from './ExamSection';
 
 const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
@@ -905,11 +907,15 @@ const AdminDashboard = ({ onLogout }) => {
           {/* STUDENT ADVISING SECTION */}
           {activeSection === 'studentAdvising' && <StudentAdvisingPage />}
 
+          {/* EXAMS SECTION */}
+          {activeSection === 'exams' && <ExamSection />}
+
           {/* Placeholder for other sections */}
           {activeSection !== 'dashboard' &&
             activeSection !== 'applications' &&
             activeSection !== 'subjects' &&
-            activeSection !== 'studentAdvising' && (
+            activeSection !== 'studentAdvising' &&
+            activeSection !== 'exams' && (
               <div className="section-placeholder">
                 <div className="placeholder-icon">
                   {
