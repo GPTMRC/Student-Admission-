@@ -85,7 +85,7 @@ const AdmissionForm = () => {
     ];
 
     requiredFields.forEach(field => {
-      if (!formData[field]?.trim()) {
+      if (!formData[field]?.toString().trim()) {
         errors[field] = 'This field is required';
       }
     });
@@ -107,13 +107,15 @@ const AdmissionForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  /**
+   * sendEmailConfirmation
+   * Returns: { success: boolean, error?: string, payload?: any, raw?: string }
+   */
   const sendEmailConfirmation = async (admissionData) => {
     try {
-      const studentName = `${admissionData.first_name} ${
-        admissionData.middle_name ? admissionData.middle_name + ' ' : ''
-      }${admissionData.last_name}`;
+      const studentName = `${admissionData.first_name} ${admissionData.middle_name ? admissionData.middle_name + ' ' : ''}${admissionData.last_name}`;
 
-      const response = await fetch(`${API_BASE_URL}/send-confirmation`, {
+      const resp = await fetch(`${API_BASE_URL}/send-confirmation`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -127,22 +129,45 @@ const AdmissionForm = () => {
         }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      // Read text first to handle non-JSON responses safely
+      const text = await resp.text().catch(() => '');
+      let json;
+      try { json = text ? JSON.parse(text) : null; } catch (err) { json = null; }
+
+      if (!resp.ok) {
+        console.error('❌ /send-confirmation error', resp.status, resp.statusText, { bodyText: text, bodyJson: json });
+        return { success: false, error: `Server ${resp.status}: ${json?.message || text || resp.statusText}`, raw: text, payload: json };
       }
 
-      const result = await response.json();
-      return result.success;
+      // OK status
+      if (!json) {
+        // Server returned 200 but not JSON
+        console.warn('⚠️ /send-confirmation returned non-JSON response:', text);
+        return { success: false, error: 'Non-JSON response from server', raw: text };
+      }
+
+      // If JSON has success boolean
+      if (typeof json.success === 'boolean') {
+        if (json.success) return { success: true, payload: json };
+        return { success: false, error: json.message || 'Email API reported failure', payload: json };
+      }
+
+      // Unexpected JSON shape but treat as success if present
+      return { success: true, payload: json };
+
     } catch (error) {
-      console.error('❌ Email request failed:', error);
-      return false;
+      console.error('❌ Email request failed (network/parsing):', error);
+      return { success: false, error: error.message || 'Network or parsing error' };
     }
   };
 
+  /**
+   * testBackendConnection
+   * returns boolean (true if backend responded with success or 200)
+   */
   const testBackendConnection = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/test-frontend-connection`, {
+      const resp = await fetch(`${API_BASE_URL}/test-frontend-connection`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -153,9 +178,23 @@ const AdmissionForm = () => {
           timestamp: new Date().toISOString()
         }),
       });
-      
-      const result = await response.json();
-      return result.success;
+
+      const text = await resp.text().catch(() => '');
+      let json;
+      try { json = text ? JSON.parse(text) : null; } catch (_) { json = null; }
+
+      if (!resp.ok) {
+        console.error('❌ test-frontend-connection responded with', resp.status, resp.statusText, { bodyText: text, bodyJson: json });
+        return false;
+      }
+
+      // If JSON has { success: true/false } prefer that
+      if (json && typeof json.success === 'boolean') {
+        return json.success;
+      }
+
+      // Otherwise treat a 200 OK as success
+      return true;
     } catch (error) {
       console.error('❌ Backend connection test failed:', error);
       return false;
@@ -176,7 +215,7 @@ const AdmissionForm = () => {
     // Test backend connection first
     const connectionOk = await testBackendConnection();
     if (!connectionOk) {
-      alert('⚠️ Cannot connect to server. Please try again later.');
+      alert('⚠️ Cannot connect to server. Please try again later. (Check backend is running on ' + API_BASE_URL + ')');
       setLoading(false);
       return;
     }
@@ -219,21 +258,24 @@ const AdmissionForm = () => {
 
       if (error) {
         console.error('❌ Database error:', error);
-        alert('Error submitting application: ' + error.message);
+        alert('Error submitting application: ' + (error.message || JSON.stringify(error)));
         setLoading(false);
         return;
       }
 
-      // Send email confirmation
-      const emailSent = await sendEmailConfirmation({
+      // Send email confirmation — new return object handled
+      const emailResult = await sendEmailConfirmation({
         ...formData,
         exam_schedule: examSchedule.toISOString()
       });
 
-      if (emailSent) {
+      if (emailResult.success) {
         alert('✅ Application submitted successfully! Exam schedule sent to your email.');
       } else {
-        alert('⚠️ Application submitted but email failed to send. Please check your email or contact administration.');
+        // Informative alert + point to console for diagnostics
+        console.warn('Email send failed details:', emailResult);
+        const serverMsg = emailResult.error ? ` (${emailResult.error})` : '';
+        alert('⚠️ Application submitted but email failed to send. Check console / server logs' + serverMsg);
       }
 
       // Reset form
@@ -265,7 +307,7 @@ const AdmissionForm = () => {
 
     } catch (error) {
       console.error('❌ General error:', error);
-      alert('Error: ' + error.message);
+      alert('Error: ' + (error.message || JSON.stringify(error)));
     } finally {
       setLoading(false);
     }
