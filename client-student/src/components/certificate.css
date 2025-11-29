@@ -1,0 +1,359 @@
+/* ==========================================================
+   Enrollment Certificate Styles - Clean & Professional
+   UPDATED FOR: No bold text, uppercase values, aligned info
+   ========================================================== */
+
+/* Container */
+.enrollment-certificate-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: #f5f5f5;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Certificate Body */
+.enrollment-certificate {
+  width: 8.5in;
+  min-height: 11in;
+  max-height: 11in;
+  background: #ffffff;
+  border: 2px solid #333;
+  padding: 0.35in;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  line-height: 1.25;
+  color: #111;
+  font-weight: 400 !important;
+  display: block;
+}
+
+/* =====================================================================
+   HEADER
+   ===================================================================== */
+.school-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #15181d;
+  text-align: center;
+}
+
+.logo-image-container {
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+  padding: 6px;
+ 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-placeholder {
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-size: 11px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.school-name {
+  font-size: 1.05rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.school-address,
+.school-tel {
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+/* =====================================================================
+   CERTIFICATE TITLE
+   ===================================================================== */
+.certificate-title {
+  text-align: center;
+  padding: 6px;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  margin-bottom: 5px;
+}
+
+.certificate-title h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  font-weight: bold;
+}
+
+.academic-info {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #000000;
+}
+
+/* =====================================================================
+   STUDENT INFORMATION (Clean Aligned Version)
+   ===================================================================== */
+.student-info {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 1px;
+  margin-bottom: 1px;
+}
+
+/* PERFECT alignment fix */
+.info-row {
+  display: grid;
+  grid-template-columns: 120px 1.2fr 120px 1fr;
+  align-items: start;
+  gap: 6px 12px;
+  margin-bottom: 5px;
+}
+
+/* Full-width rows (NAME, ADDRESS) */
+.info-row.full-width {
+  grid-template-columns: 120px 1fr;
+}
+
+.label {
+  color: #444;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.value {
+  color: #000;
+  font-size: 0.83rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* Name & Address slightly larger */
+.info-row.full-width .value {
+  font-size: 0.9rem;
+}
+
+/* =====================================================================
+   SUBJECTS TABLE
+   ===================================================================== */
+.subjects-section {
+  margin-bottom: 8px;
+}
+
+.subjects-section h3 {
+  background: #e9ecef;
+  border-radius: 3px;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  border: 1px solid #ced4da;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.66rem;
+  border: 1px solid #ddd;
+  table-layout: fixed;
+}
+
+.subjects-table th,
+.subjects-table td {
+  border: 1px solid #ddd;
+  padding: 4px 5px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.subjects-table th {
+  background: #0a5216;
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* =====================================================================
+   FEES SECTION
+   ===================================================================== */
+.fees-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.fees-left,
+.fees-right {
+  flex: 1;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.fees-left h4,
+.fees-right h4 {
+  text-align: center;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.fee-item,
+.other-fee-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 4px;
+}
+
+/* =====================================================================
+   SIGNATURES
+   ===================================================================== */
+.signatures-section {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #333;
+  margin-top: 10px;
+}
+
+.signature-left,
+.signature-center,
+.signature-right {
+  text-align: center;
+  flex: 1;
+}
+
+.signature-line {
+  width: 70%;
+  height: 1px;
+  background: #000;
+  margin: 0 auto 10px auto;
+}
+
+.signature-name {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #020303;
+  font-weight: 400;
+}
+
+/* =====================================================================
+   FOOTER NOTES
+   ===================================================================== */
+.footer-notes {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.footer-notes p {
+  margin: 2px 0;
+}
+
+/* =====================================================================
+   DATE
+   ===================================================================== */
+.date-section {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  border-top: 1px solid #333;
+  margin-top: 8px;
+  padding-top: 6px;
+  text-transform: uppercase;
+}
+
+/* =====================================================================
+   PRINT BUTTON
+   ===================================================================== */
+.print-button-container {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.print-btn {
+  background: #51a02c;
+  color: #fff;
+  padding: 10px 25px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.print-tip {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* =====================================================================
+   PDF OVERLAY
+   ===================================================================== */
+.pdf-generation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #2ca03b;
+  font-size: 1rem;
+}
+
+.pdf-generation-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #eee;
+  border-top: 3px solid #64a02c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* =====================================================================
+   PRINT STYLES
+   ===================================================================== */
+@media print {
+  .print-button-container {
+    display: none !important;
+  }
+
+  .enrollment-certificate {
+    width: 8.5in !important;
+    height: 11in !important;
+    border: 2px solid #333 !important;
+    padding: 0.35in !important;
+    box-shadow: none !important;
+  }
+}

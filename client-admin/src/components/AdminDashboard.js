@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
 import StudentAdvisingPage from './StudentAdvisingPage';
 import SubjectsPage from './SubjectsPage';
-import ExamSection from './ExamSection';
+import ExamSection from './ExamSection.jsx';
 import AdminSettings from './AdminSettings';
 
 const AdminDashboard = ({ onLogout }) => {

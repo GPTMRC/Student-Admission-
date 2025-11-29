@@ -1,302 +1,145 @@
 import React, { useState, useEffect } from 'react';
-import './ExamSection.css';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://avnmpvjocmnearcgrduq.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bm1wdmpvY21uZWFyY2dyZHVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MzQ2OTAsImV4cCI6MjA3NTQxMDY5MH0.i7NNK9WB_mzFj84Rjk5f5hq-i6g_-lYPeLjCHJiiw2Q';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ExamSection = () => {
-  const [exams, setExams] = useState([]);
-  const [filteredExams, setFilteredExams] = useState([]);
-  const [selectedExam, setSelectedExam] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    status: 'all',
-    examType: 'all',
-    dateRange: ''
-  });
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [examDate, setExamDate] = useState('');
 
-  // Sample data - you can replace this with actual data from your database
-  const sampleExams = [
-    {
-      exam_id: 1,
-      student_id: 101,
-      full_name: 'John Smith',
-      desired_program: 'Computer Science',
-      exam_type: 'Entrance Exam',
-      exam_date: '2024-01-15',
-      exam_time: '09:00:00',
-      exam_room: 'Room 101',
-      exam_score: 85.50,
-      total_score: 100.00,
-      exam_status: 'completed',
-      proctor_name: 'Dr. Smith',
-      exam_duration: 120,
-      exam_subject: 'General Aptitude',
-      remarks: 'Excellent performance'
-    },
-    {
-      exam_id: 2,
-      student_id: 102,
-      full_name: 'Maria Garcia',
-      desired_program: 'Business Administration',
-      exam_type: 'Entrance Exam',
-      exam_date: '2024-01-15',
-      exam_time: '09:00:00',
-      exam_room: 'Room 102',
-      exam_score: null,
-      total_score: 100.00,
-      exam_status: 'scheduled',
-      proctor_name: 'Prof. Johnson',
-      exam_duration: 120,
-      exam_subject: 'General Aptitude',
-      remarks: ''
-    }
-  ];
+  const getApplicationsByStatus = async (status) => {
+    const { data, error } = await supabase
+      .from('student_admissions')
+      .select('*')
+      .eq('status', status)
+      .order('submitted_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  };
+
+  const updateExamSchedule = async (id, examDate) => {
+    const { data, error } = await supabase
+      .from('student_admissions')
+      .update({ exam_schedule: examDate })
+      .eq('id', id)
+      .select();
+    if (error) throw error;
+    return data;
+  };
+
+  const updateApplicationStatus = async (id, status) => {
+    const { data, error } = await supabase
+      .from('student_admissions')
+      .update({ status })
+      .eq('id', id)
+      .select();
+    if (error) throw error;
+    return data;
+  };
 
   useEffect(() => {
-    // In real application, fetch from API
-    setExams(sampleExams);
-    setFilteredExams(sampleExams);
+    fetchApplications();
   }, []);
 
-  useEffect(() => {
-    filterExams();
-  }, [filters, exams]);
+  const fetchApplications = async () => {
+    try {
+      setLoading(true);
+      const data = await getApplicationsByStatus('submitted');
+      setApplications(data || []);
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filterExams = () => {
-    let filtered = exams;
-
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(exam => exam.exam_status === filters.status);
+  const handleScheduleExam = async (applicationId) => {
+    if (!examDate) {
+      alert('Please select an exam date');
+      return;
     }
 
-    if (filters.examType !== 'all') {
-      filtered = filtered.filter(exam => exam.exam_type === filters.examType);
+    try {
+      await updateExamSchedule(applicationId, examDate);
+      await updateApplicationStatus(applicationId, 'scheduled');
+      alert('Exam scheduled successfully!');
+      setSelectedApp(null);
+      setExamDate('');
+      fetchApplications();
+    } catch (error) {
+      console.error('Error scheduling exam:', error);
+      alert('Error scheduling exam');
     }
-
-    if (filters.dateRange) {
-      filtered = filtered.filter(exam => exam.exam_date === filters.dateRange);
-    }
-
-    setFilteredExams(filtered);
   };
 
-  const handleViewDetails = (exam) => {
-    setSelectedExam(exam);
-    setIsModalOpen(true);
-  };
-
-  const handleUpdateScore = (examId, newScore) => {
-    setExams(prev => prev.map(exam => 
-      exam.exam_id === examId 
-        ? { ...exam, exam_score: newScore, exam_status: 'completed' }
-        : exam
-    ));
-  };
-
-  const getStatusBadge = (status) => {
-    const statusClasses = {
-      scheduled: 'status-scheduled',
-      completed: 'status-completed',
-      absent: 'status-absent',
-      cancelled: 'status-cancelled',
-      rescheduled: 'status-rescheduled'
-    };
-
-    return <span className={`status-badge ${statusClasses[status]}`}>{status}</span>;
-  };
-
-  const calculatePercentage = (score, total) => {
-    return total > 0 ? ((score / total) * 100).toFixed(1) : 0;
-  };
+  if (loading) return <div>Loading applications...</div>;
 
   return (
-    <div className="exam-section">
-      <div className="section-header">
-        <h2>Exam Management</h2>
-        <p>Manage student exams, schedules, and results</p>
-      </div>
-
-      {/* Filters */}
-      <div className="filters-section">
-        <div className="filter-group">
-          <label>Status:</label>
-          <select 
-            value={filters.status} 
-            onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-          >
-            <option value="all">All Status</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="completed">Completed</option>
-            <option value="absent">Absent</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="rescheduled">Rescheduled</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Exam Type:</label>
-          <select 
-            value={filters.examType} 
-            onChange={(e) => setFilters(prev => ({ ...prev, examType: e.target.value }))}
-          >
-            <option value="all">All Types</option>
-            <option value="Entrance Exam">Entrance Exam</option>
-            <option value="Make-up Exam">Make-up Exam</option>
-            <option value="Special Exam">Special Exam</option>
-            <option value="Retake Exam">Retake Exam</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Exam Date:</label>
-          <input 
-            type="date" 
-            value={filters.dateRange}
-            onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-          />
-        </div>
-      </div>
-
-      {/* Exams Table */}
-      <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Student Name</th>
-              <th>Program</th>
-              <th>Exam Type</th>
-              <th>Date & Time</th>
-              <th>Room</th>
-              <th>Score</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredExams.map(exam => (
-              <tr key={exam.exam_id}>
-                <td className="student-info">
-                  <div className="student-name">{exam.full_name}</div>
-                  <div className="student-id">ID: {exam.student_id}</div>
-                </td>
-                <td>{exam.desired_program}</td>
-                <td>{exam.exam_type}</td>
-                <td>
-                  <div className="datetime-cell">
-                    <div className="date">{new Date(exam.exam_date).toLocaleDateString()}</div>
-                    <div className="time">{exam.exam_time.slice(0, 5)}</div>
-                  </div>
-                </td>
-                <td>{exam.exam_room}</td>
-                <td>
-                  {exam.exam_score ? (
-                    <div className="score-cell">
-                      <span className="score">{exam.exam_score}/{exam.total_score}</span>
-                      <span className="percentage">
-                        ({calculatePercentage(exam.exam_score, exam.total_score)}%)
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="no-score">Not taken</span>
-                  )}
-                </td>
-                <td>{getStatusBadge(exam.exam_status)}</td>
-                <td>
-                  <div className="action-buttons">
-                    <button 
-                      className="btn btn-primary btn-small"
-                      onClick={() => handleViewDetails(exam)}
-                    >
-                      View
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredExams.length === 0 && (
-          <div className="no-data">
-            <p>No exams found matching the current filters.</p>
+    <div style={{ padding: '20px' }}>
+      <h2>Schedule Exams</h2>
+      <div style={{ display: 'grid', gap: '15px', marginTop: '20px' }}>
+        {applications.map(app => (
+          <div key={app.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <h3>{app.full_name}</h3>
+              <p>Email: {app.email}</p>
+              <p>Program: {app.desired_program}</p>
+              <p>Contact: {app.contact_number}</p>
+              {app.exam_schedule && (
+                <p><strong>Scheduled: {new Date(app.exam_schedule).toLocaleString()}</strong></p>
+              )}
+            </div>
+            <div style={{ marginLeft: '15px' }}>
+              <button 
+                onClick={() => {
+                  setSelectedApp(app);
+                  setExamDate(app.exam_schedule ? app.exam_schedule.slice(0, 16) : '');
+                }}
+                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#007bff', color: 'white', cursor: 'pointer' }}
+              >
+                {app.exam_schedule ? 'Reschedule Exam' : 'Schedule Exam'}
+              </button>
+            </div>
           </div>
+        ))}
+        {applications.length === 0 && (
+          <p>No applications pending exam scheduling.</p>
         )}
       </div>
 
-      {/* Exam Details Modal */}
-      {isModalOpen && selectedExam && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Exam Details</h2>
-              <button 
-                className="close-btn"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ×
-              </button>
+      {selectedApp && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', minWidth: '400px' }}>
+            <h3>Schedule Exam for {selectedApp.full_name}</h3>
+            <div style={{ margin: '15px 0' }}>
+              <label>Exam Date and Time:</label>
+              <input
+                type="datetime-local"
+                value={examDate}
+                onChange={(e) => setExamDate(e.target.value)}
+                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
             </div>
-
-            <div className="modal-body">
-              <div className="detail-grid">
-                <div className="detail-item">
-                  <label>Student Name:</label>
-                  <span>{selectedExam.full_name}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Student ID:</label>
-                  <span>{selectedExam.student_id}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Desired Program:</label>
-                  <span>{selectedExam.desired_program}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Exam Type:</label>
-                  <span>{selectedExam.exam_type}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Exam Date:</label>
-                  <span>{new Date(selectedExam.exam_date).toLocaleDateString()}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Exam Time:</label>
-                  <span>{selectedExam.exam_time.slice(0, 5)}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Room:</label>
-                  <span>{selectedExam.exam_room}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Proctor:</label>
-                  <span>{selectedExam.proctor_name}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Duration:</label>
-                  <span>{selectedExam.exam_duration} minutes</span>
-                </div>
-                <div className="detail-item">
-                  <label>Subject:</label>
-                  <span>{selectedExam.exam_subject}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Status:</label>
-                  <span>{getStatusBadge(selectedExam.exam_status)}</span>
-                </div>
-                {selectedExam.exam_score && (
-                  <>
-                    <div className="detail-item">
-                      <label>Score:</label>
-                      <span className="score-detail">
-                        {selectedExam.exam_score}/{selectedExam.total_score} 
-                        ({calculatePercentage(selectedExam.exam_score, selectedExam.total_score)}%)
-                      </span>
-                    </div>
-                    <div className="detail-item full-width">
-                      <label>Remarks:</label>
-                      <span>{selectedExam.remarks}</span>
-                    </div>
-                  </>
-                )}
-              </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => handleScheduleExam(selectedApp.id)}
+                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#28a745', color: 'white', cursor: 'pointer' }}
+              >
+                Confirm Schedule
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedApp(null);
+                  setExamDate('');
+                }}
+                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#6c757d', color: 'white', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
