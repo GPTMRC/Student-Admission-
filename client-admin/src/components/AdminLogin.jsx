@@ -1,12 +1,14 @@
 // src/components/AdminLogin.jsx
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
+import AdminRegistration from './AdminRegistration';
 import './AdminLogin.css';
 
 const AdminLogin = ({ onLoginSuccess }) => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showRegistration, setShowRegistration] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,62 +69,34 @@ const AdminLogin = ({ onLoginSuccess }) => {
     }
   };
 
-  const createDefaultAdmin = async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const { data: testData, error: testError } = await supabase
-        .from('admin_users')
-        .select('email')
-        .limit(1);
-
-      if (testError && testError.code === '42703') {
-        setError(
-          'Table structure is incorrect. Please run the SQL in Supabase SQL Editor to recreate the table with correct structure.'
-        );
-        return;
-      }
-
-      const { data: existingAdmin } = await supabase
-        .from('admin_users')
-        .select('id')
-        .eq('email', 'admin@ptc.edu.ph')
-        .single();
-
-      if (existingAdmin) {
-        setError('Admin user already exists. Use: admin@ptc.edu.ph / demo123');
-        setLoginData({ email: 'admin@ptc.edu.ph', password: 'demo123' });
-        return;
-      }
-
-      const { error: insertError } = await supabase
-        .from('admin_users')
-        .insert([
-          {
-            email: 'admin@ptc.edu.ph',
-            password: 'demo123',
-            full_name: 'PTC Administrator',
-            role: 'super_admin'
-          }
-        ]);
-
-      if (insertError) throw insertError;
-
-      setError('Default admin created successfully. Use: admin@ptc.edu.ph / demo123');
-      setLoginData({ email: 'admin@ptc.edu.ph', password: 'demo123' });
-
-    } catch (error) {
-      setError('Failed to create admin: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDemoLogin = () => {
     setLoginData({ email: 'admin@ptc.edu.ph', password: 'demo123' });
     setError('');
   };
+
+  const handleShowRegistration = () => {
+    setShowRegistration(true);
+    setError('');
+  };
+
+  const handleHideRegistration = () => {
+    setShowRegistration(false);
+    setError('');
+  };
+
+  const handleRegistrationSuccess = (userData) => {
+    onLoginSuccess && onLoginSuccess(userData);
+  };
+
+  // Show registration component if needed
+  if (showRegistration) {
+    return (
+      <AdminRegistration 
+        onRegistrationSuccess={handleRegistrationSuccess}
+        onSwitchToLogin={handleHideRegistration}
+      />
+    );
+  }
 
   return (
     <div className="admin-login-container">
@@ -130,8 +104,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
         <div className="admin-login-card">
           {/* Logo Slot */}
           <div className="admin-logo-slot">
-            {/* Add your logo image here */}
-             <img src="logo-ptc.png" alt="PTC Logo" className="admin-logo-image" />
+            <img src="logo-ptc.png" alt="PTC Logo" className="admin-logo-image" />
           </div>
 
           <div className="admin-login-header">
@@ -195,7 +168,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
 
               <button 
                 type="button" 
-                onClick={createDefaultAdmin} 
+                onClick={handleShowRegistration} 
                 disabled={loading}
                 className="admin-create-button"
               >

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './AdminDashboard.css';
-  
 import StudentAdvisingPage from './StudentAdvisingPage';
 import SubjectsPage from './SubjectsPage';
 import ExamSection from './ExamSection';
+import AdminSettings from './AdminSettings';
 
 const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
@@ -421,7 +421,7 @@ const AdminDashboard = ({ onLogout }) => {
     return days;
   };
 
-  // ✅ FIXED NAVIGATION ITEMS - Removed duplicates
+  // ✅ FIXED NAVIGATION ITEMS - Updated to include Settings
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'applications', label: 'Applications', icon: '📰' },
@@ -429,7 +429,7 @@ const AdminDashboard = ({ onLogout }) => {
     { id: 'subjects', label: 'Subjects', icon: '📚' },
     { id: 'exams', label: 'Exams', icon: '✓' },
     { id: 'reports', label: 'Reports', icon: '📉' },
-    { id: 'settings', label: 'Settings', icon: '☰' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 
   const toggleSidebar = () => {
@@ -910,12 +910,16 @@ const AdminDashboard = ({ onLogout }) => {
           {/* EXAMS SECTION */}
           {activeSection === 'exams' && <ExamSection />}
 
+          {/* SETTINGS SECTION */}
+          {activeSection === 'settings' && <AdminSettings />}
+
           {/* Placeholder for other sections */}
           {activeSection !== 'dashboard' &&
             activeSection !== 'applications' &&
             activeSection !== 'subjects' &&
             activeSection !== 'studentAdvising' &&
-            activeSection !== 'exams' && (
+            activeSection !== 'exams' &&
+            activeSection !== 'settings' && (
               <div className="section-placeholder">
                 <div className="placeholder-icon">
                   {

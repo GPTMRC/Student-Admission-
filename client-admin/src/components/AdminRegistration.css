@@ -1,0 +1,548 @@
+/* src/components/AdminRegistration.css */
+.admin-registration-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(125deg, rgba(85, 107, 47, 0.85), rgba(107, 142, 35, 0.85), rgba(154, 205, 50, 0.85)), 
+              url('../assets/ptc-bg.jpg') center/cover no-repeat;
+  position: relative;
+  overflow: hidden;
+  padding: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.admin-registration-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 2;
+}
+
+.admin-registration-card {
+  background: rgba(26, 32, 44, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  text-align: center;
+  min-height: auto;
+}
+
+.admin-logo-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  min-height: 60px;
+}
+
+.admin-logo-image {
+  max-width: 120px;
+  max-height: 130px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.admin-logo-placeholder {
+  width: 120px;
+  height: 60px;
+  background: linear-gradient(135deg, #556b2f, #6b8e23);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(85, 107, 47, 0.3);
+}
+
+.admin-registration-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.admin-registration-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f7fafc;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.admin-registration-subtitle {
+  font-size: 14px;
+  color: #cbd5e0;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.admin-registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.admin-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.admin-input {
+  padding: 12px 14px;
+  border: 2px solid #4a5568;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #2d3748;
+  color: #f7fafc;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.2);
+  background: #2d3748;
+}
+
+.admin-input:hover {
+  border-color: #10b981;
+}
+
+.admin-input:disabled {
+  background-color: #4a5568;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: #4a5568;
+}
+
+.admin-input::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+/* Password Strength Indicator Styles */
+.password-strength-indicator {
+  margin-top: 6px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #cbd5e0;
+}
+
+.password-strength-weak {
+  color: #fc8181;
+}
+
+.password-strength-moderate {
+  color: #f6e05e;
+}
+
+.password-strength-strong {
+  color: #68d391;
+}
+
+.password-guidance {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #a0aec0;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.password-guidance small {
+  opacity: 0.9;
+  font-size: 11px;
+}
+
+.admin-security-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #a0aec0;
+  text-align: center;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.admin-security-note small {
+  opacity: 0.9;
+  font-size: 11px;
+}
+
+.admin-register-button {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  border: none;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0.25rem;
+  width: 100%;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+}
+
+.admin-register-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6b8e23, #556b2f);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(85, 107, 47, 0.4);
+}
+
+.admin-register-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(85, 107, 47, 0.3);
+}
+
+.admin-register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.admin-button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.admin-back-to-login-button {
+  background: #718096;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  font-family: inherit;
+}
+
+.admin-back-to-login-button:hover:not(:disabled) {
+  background: #4a5568;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
+}
+
+.admin-back-to-login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.admin-back-to-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.admin-registration-footer {
+  border-top: 1px solid #4a5568;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-footer-text {
+  font-size: 12px;
+  color: #a0aec0;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
+.admin-footer-text strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.admin-error-message {
+  background: rgba(254, 215, 215, 0.9);
+  border: 1px solid rgba(254, 178, 178, 0.8);
+  color: #c53030;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+  font-weight: 500;
+}
+
+.admin-success-message {
+  background: rgba(198, 246, 213, 0.9);
+  border: 1px solid rgba(154, 230, 180, 0.8);
+  color: #2d7744;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+  font-weight: 500;
+}
+
+.admin-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: admin-spin 1s linear infinite;
+}
+
+@keyframes admin-spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+.admin-input:focus-visible,
+.admin-register-button:focus-visible,
+.admin-back-to-login-button:focus-visible {
+  outline: 2px solid #556b2f;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .admin-registration-container {
+    padding: 0.75rem;
+  }
+  
+  .admin-registration-content {
+    max-width: 360px;
+  }
+  
+  .admin-registration-card {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .admin-logo-slot {
+    margin-bottom: 1.25rem;
+    min-height: 50px;
+  }
+  
+  .admin-logo-image {
+    max-width: 100px;
+    max-height: 50px;
+  }
+  
+  .admin-logo-placeholder {
+    width: 100px;
+    height: 50px;
+    font-size: 11px;
+  }
+  
+  .admin-registration-title {
+    font-size: 20px;
+  }
+  
+  .admin-registration-subtitle {
+    font-size: 13px;
+  }
+  
+  .admin-input {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+  
+  .admin-register-button {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  
+  .admin-button-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .admin-back-to-login-button {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+  
+  .password-strength-indicator {
+    font-size: 11px;
+  }
+  
+  .password-guidance {
+    font-size: 10px;
+  }
+  
+  .password-guidance small {
+    font-size: 10px;
+  }
+  
+  .admin-security-note {
+    font-size: 10px;
+  }
+  
+  .admin-security-note small {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-registration-container {
+    padding: 0.5rem;
+  }
+  
+  .admin-registration-content {
+    max-width: 100%;
+  }
+  
+  .admin-registration-card {
+    padding: 1.25rem 1rem;
+    border-radius: 10px;
+  }
+  
+  .admin-logo-slot {
+    margin-bottom: 1rem;
+    min-height: 40px;
+  }
+  
+  .admin-logo-image {
+    max-width: 80px;
+    max-height: 40px;
+  }
+  
+  .admin-logo-placeholder {
+    width: 80px;
+    height: 40px;
+    font-size: 10px;
+  }
+  
+  .admin-registration-title {
+    font-size: 18px;
+  }
+  
+  .admin-registration-subtitle {
+    font-size: 12px;
+  }
+  
+  .admin-registration-form {
+    gap: 0.75rem;
+  }
+  
+  .admin-input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .admin-register-button {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+  
+  .admin-back-to-login-button {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .admin-footer-text {
+    font-size: 11px;
+  }
+  
+  .password-strength-indicator {
+    font-size: 10px;
+  }
+  
+  .password-guidance {
+    font-size: 9px;
+  }
+  
+  .password-guidance small {
+    font-size: 9px;
+  }
+  
+  .admin-security-note {
+    font-size: 9px;
+  }
+  
+  .admin-security-note small {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .admin-registration-card {
+    background: #000000;
+    border: 2px solid #ffffff;
+  }
+  
+  .admin-input {
+    border: 2px solid #ffffff;
+    background: #000000;
+    color: #ffffff;
+  }
+  
+  .admin-input:focus {
+    border-color: #556b2f;
+    outline: 2px solid #556b2f;
+  }
+  
+  .password-strength-weak {
+    color: #ff4444;
+  }
+  
+  .password-strength-moderate {
+    color: #ffaa00;
+  }
+  
+  .password-strength-strong {
+    color: #00ff00;
+  }
+}
+
+.admin-text-center {
+  text-align: center;
+}
+
+.admin-text-muted {
+  color: #a0aec0;
+}
+
+.admin-mt-1 {
+  margin-top: 0.5rem;
+}
+
+.admin-mb-1 {
+  margin-bottom: 0.5rem;
+}
+
+.admin-mt-2 {
+  margin-top: 1rem;
+}
+
+.admin-mb-2 {
+  margin-bottom: 1rem;
+}
