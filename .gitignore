@@ -28,3 +28,12 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+client-new-student/node_modulues/
+client-new-student/node_modulues/.cache
+
+client-student/node_modulues/
+client-student/node_modulues/.cache
+
+client-admin/node_modulues/
+client-admin/node_modulues/.cache

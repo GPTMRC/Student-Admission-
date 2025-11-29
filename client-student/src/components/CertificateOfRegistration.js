@@ -1,477 +1,186 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const CertificateOfRegistration = ({ studentData, onClose }) => {
-  const [currentSemester, setCurrentSemester] = useState('1st Semester 2024');
-  const [courses, setCourses] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [corData, setCorData] = useState(null);
 
-  // Sample course data
-  useEffect(() => {
-    const sampleCourses = [
-      {
-        code: 'GE 2',
-        title: 'Understanding the self',
-        units: 3,
-        lec: 3,
-        lab: 0,
-        section: 'CCS 1G',
-        day: 'W',
-        time: '6:00-9:00PM',
-        instructor: 'VILLACARLOS'
-      },
-      {
-        code: 'GE 1',
-        title: 'Mathematics in Modern World',
-        units: 3,
-        lec: 3,
-        lab: 0,
-        section: 'CCS 1G',
-        day: 'M',
-        time: '6:00-9:00PM',
-        instructor: 'KANMO'
-      },
-      {
-        code: 'CC 101',
-        title: 'IT Fundamentals',
-        units: 3,
-        lec: 3,
-        lab: 0,
-        section: 'CCS 1G',
-        day: 'TH',
-        time: '6:00-9:00PM',
-        instructor: 'TAVU ER'
-      },
-      {
-        code: 'CC 102',
-        title: 'Programming 1 (Java)',
-        units: 3,
-        lec: 2,
-        lab: 3,
-        section: 'CCS 1G',
-        day: 'F',
-        time: '4:00-9:00PM',
-        instructor: 'R-YAMSON'
-      },
-      {
-        code: 'OP 1',
-        title: 'Office Productivity 1',
-        units: 3,
-        lec: 2,
-        lab: 3,
-        section: 'CCS 1G',
-        day: 'T',
-        time: '4:00-9:00PM',
-        instructor: 'G RAQUEL'
-      }
-    ];
-    setCourses(sampleCourses);
-  }, []);
+  const currentSemesterCourses = [
+    { code: 'CS101', name: 'Introduction to Programming', units: 3, schedule: 'MWF 9:00-10:00', room: 'CS Lab 1' },
+    { code: 'MATH201', name: 'Calculus I', units: 4, schedule: 'TTH 10:00-11:30', room: 'Math 202' },
+    { code: 'ENG101', name: 'Composition and Rhetoric', units: 3, schedule: 'MWF 11:00-12:00', room: 'English 101' },
+    { code: 'SCI101', name: 'General Science', units: 3, schedule: 'TTH 1:00-2:30', room: 'Science Lab 3' },
+    { code: 'PE101', name: 'Physical Education', units: 2, schedule: 'F 2:00-4:00', room: 'Gymnasium' },
+  ];
 
-  const calculateTotals = () => {
-    const totalUnits = courses.reduce((sum, course) => sum + course.units, 0);
-    const totalLec = courses.reduce((sum, course) => sum + course.lec, 0);
-    const totalLab = courses.reduce((sum, course) => sum + course.lab, 0);
-    return { totalUnits, totalLec, totalLab };
+  const handleGenerateCOR = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      setCorData({
+        generatedAt: new Date().toLocaleDateString(),
+        semester: 'Spring 2024',
+        totalUnits: currentSemesterCourses.reduce((sum, course) => sum + course.units, 0),
+        courses: currentSemesterCourses,
+        academicYear: '2023-2024',
+        dateGenerated: new Date().toISOString()
+      });
+      setIsGenerating(false);
+    }, 2000);
   };
 
-  const handleEditCourse = (index, field, value) => {
-    const updatedCourses = [...courses];
-    updatedCourses[index][field] = value;
-    setCourses(updatedCourses);
+  const handleDownloadPDF = () => {
+    alert('Downloading Certificate of Registration as PDF...');
+    // In a real application, this would generate and download a PDF file
   };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const { totalUnits, totalLec, totalLab } = calculateTotals();
+  return (
+    <div className="document-section">
+      <div className="document-header">
+        <div className="header-with-close">
+          <div>
+            <h2>Certificate of Registration</h2>
+            <p>Official registration document for current semester</p>
+          </div>
+          <button className="btn-close" onClick={onClose}>×</button>
+        </div>
+      </div>
 
-  // Compact fees breakdown
-  const fees = {
-    tuition: 6000,
-    laboratory: 900,
-    computer: 2700,
-    misc: 670 // Sum of all miscellaneous fees
-  };
+      <div className="document-content">
+        {/* Student Information */}
+        <div className="student-info-section">
+          <h3>Student Information</h3>
+          <div className="info-grid">
+            <div className="info-item">
+              <label>Student Number:</label>
+              <span>{studentData.student_number}</span>
+            </div>
+            <div className="info-item">
+              <label>Full Name:</label>
+              <span>{studentData.first_name} {studentData.middle_name || ''} {studentData.last_name}</span>
+            </div>
+            <div className="info-item">
+              <label>Program:</label>
+              <span>{studentData.program_enrolled}</span>
+            </div>
+            <div className="info-item">
+              <label>Year Level:</label>
+              <span>{studentData.year_level}</span>
+            </div>
+            <div className="info-item">
+              <label>Academic Year:</label>
+              <span>2023-2024</span>
+            </div>
+            <div className="info-item">
+              <label>Semester:</label>
+              <span>Spring 2024</span>
+            </div>
+          </div>
+        </div>
 
-  const totalFees = fees.tuition + fees.laboratory + fees.computer + fees.misc;
+        {/* Course Registration */}
+        {corData && (
+          <div className="courses-section">
+            <h3>Registered Courses - {corData.semester}</h3>
+            <table className="courses-table">
+              <thead>
+                <tr>
+                  <th>Course Code</th>
+                  <th>Course Name</th>
+                  <th>Units</th>
+                  <th>Schedule</th>
+                  <th>Room</th>
+                </tr>
+              </thead>
+              <tbody>
+                {corData.courses.map((course, index) => (
+                  <tr key={course.code}>
+                    <td>{course.code}</td>
+                    <td>{course.name}</td>
+                    <td>{course.units}</td>
+                    <td>{course.schedule}</td>
+                    <td>{course.room}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="2"><strong>Total Units</strong></td>
+                  <td><strong>{corData.totalUnits}</strong></td>
+                  <td colSpan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
 
-  return React.createElement(
-    'div',
-    { className: 'cor-container' },
-    // Control Panel
-    React.createElement(
-      'div',
-      { className: 'cor-controls' },
-      React.createElement(
-        'button',
-        {
-          className: 'print-btn',
-          onClick: handlePrint
-        },
-        '🖨️ Print COR'
-      ),
-      React.createElement(
-        'button',
-        {
-          className: 'edit-btn',
-          onClick: () => setIsEditing(!isEditing)
-        },
-        isEditing ? '🔒 Lock' : '✏️ Edit'
-      ),
-      React.createElement(
-        'button',
-        {
-          className: 'close-btn',
-          onClick: onClose
-        },
-        '❌ Close'
-      )
-    ),
+        {/* Official Stamps and Signatures */}
+        {corData && (
+          <div className="document-footer">
+            <div className="official-stamps">
+              <div className="stamp-section">
+                <div className="stamp-placeholder">REGISTRAR'S OFFICE</div>
+                <p>Registrar's Signature</p>
+              </div>
+              <div className="stamp-section">
+                <div className="stamp-placeholder">ACADEMIC AFFAIRS</div>
+                <p>Dean's Signature</p>
+              </div>
+            </div>
+            <div className="generation-info">
+              <p><strong>Generated on:</strong> {corData.generatedAt}</p>
+              <p><strong>Document ID:</strong> COR-{studentData.student_number}-2024-SPRING</p>
+              <p><strong>Status:</strong> Officially Registered</p>
+            </div>
+          </div>
+        )}
 
-    // Certificate of Registration Document - COMPACT VERSION
-    React.createElement(
-      'div',
-      { className: 'cor-document compact' },
-      // Header
-      React.createElement(
-        'div',
-        { className: 'cor-header' },
-        React.createElement(
-          'div',
-          { className: 'school-header' },
-          React.createElement('h1', null, 'PATEROS TECHNOLOGICAL COLLEGE'),
-          React.createElement('p', { className: 'school-address' }, 
-            'College St., Sto. Rosario - Kanluran Pateros, Metro Manila'
-          ),
-          React.createElement('h2', { className: 'document-title' }, 
-            'CERTIFICATE OF REGISTRATION'
-          )
-        )
-      ),
+        {/* Action Buttons */}
+        <div className="document-actions">
+          {!corData ? (
+            <button 
+              className={`btn-confirm large ${isGenerating ? 'loading' : ''}`}
+              onClick={handleGenerateCOR}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <>
+                  <span className="loading-spinner-small"></span>
+                  Generating COR...
+                </>
+              ) : (
+                'Generate Certificate of Registration'
+              )}
+            </button>
+          ) : (
+            <div className="action-buttons-group">
+              <button className="btn-confirm large" onClick={handleDownloadPDF}>
+                📄 Download COR PDF
+              </button>
+              <button className="btn-schedule large" onClick={handlePrint}>
+                🖨️ Print COR
+              </button>
+              <button className="btn-schedule large" onClick={() => setCorData(null)}>
+                🔄 Generate New
+              </button>
+            </div>
+          )}
+        </div>
 
-      // Student Information - COMPACT
-      React.createElement(
-        'div',
-        { className: 'student-info compact' },
-        React.createElement(
-          'div',
-          { className: 'info-grid compact' },
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('strong', null, 'NAME: '),
-            studentData ? 
-              `${studentData.last_name}, ${studentData.first_name} ${studentData.middle_name || ''}`.toUpperCase() :
-              'BAYLON, MARK CHRISTIAN MACASABUANG'
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('strong', null, 'ID NO: '),
-            studentData?.student_number || '2022-8397'
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('strong', null, 'PROGRAM: '),
-            studentData?.program_enrolled || 'CERTIFICATE IN COMPUTER SCIENCE'
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('strong', null, 'YEAR LEVEL: '),
-            studentData?.year_level || '1ST YEAR'
-          ),
-          React.createElement(
-            'div',
-            { className: 'info-item' },
-            React.createElement('strong', null, 'SEMESTER: '),
-            isEditing ? 
-              React.createElement('input', {
-                type: 'text',
-                value: currentSemester,
-                onChange: (e) => setCurrentSemester(e.target.value),
-                className: 'edit-input small'
-              }) :
-              currentSemester
-          )
-        )
-      ),
-
-      // Courses Table - COMPACT
-      React.createElement(
-        'div',
-        { className: 'courses-section compact' },
-        React.createElement(
-          'table',
-          { className: 'courses-table compact' },
-          React.createElement(
-            'thead',
-            null,
-            React.createElement(
-              'tr',
-              null,
-              React.createElement('th', null, 'CODE'),
-              React.createElement('th', null, 'COURSE TITLE'),
-              React.createElement('th', null, 'UNT'),
-              React.createElement('th', null, 'LEC'),
-              React.createElement('th', null, 'LAB'),
-              React.createElement('th', null, 'SEC'),
-              React.createElement('th', null, 'DAY'),
-              React.createElement('th', null, 'TIME'),
-              React.createElement('th', null, 'INSTRUCTOR')
-            )
-          ),
-          React.createElement(
-            'tbody',
-            null,
-            courses.map((course, index) => 
-              React.createElement(
-                'tr',
-                { key: index },
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.code,
-                      onChange: (e) => handleEditCourse(index, 'code', e.target.value),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.code
-                ),
-                React.createElement(
-                  'td',
-                  { className: 'course-title' },
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.title,
-                      onChange: (e) => handleEditCourse(index, 'title', e.target.value),
-                      className: 'edit-input'
-                    }) :
-                    course.title
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'number',
-                      value: course.units,
-                      onChange: (e) => handleEditCourse(index, 'units', parseInt(e.target.value) || 0),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.units
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'number',
-                      value: course.lec,
-                      onChange: (e) => handleEditCourse(index, 'lec', parseInt(e.target.value) || 0),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.lec
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'number',
-                      value: course.lab,
-                      onChange: (e) => handleEditCourse(index, 'lab', parseInt(e.target.value) || 0),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.lab
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.section,
-                      onChange: (e) => handleEditCourse(index, 'section', e.target.value),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.section
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.day,
-                      onChange: (e) => handleEditCourse(index, 'day', e.target.value),
-                      className: 'edit-input x-small'
-                    }) :
-                    course.day
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.time,
-                      onChange: (e) => handleEditCourse(index, 'time', e.target.value),
-                      className: 'edit-input small'
-                    }) :
-                    course.time
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  isEditing ?
-                    React.createElement('input', {
-                      type: 'text',
-                      value: course.instructor,
-                      onChange: (e) => handleEditCourse(index, 'instructor', e.target.value),
-                      className: 'edit-input small'
-                    }) :
-                    course.instructor
-                )
-              )
-            )
-          ),
-          React.createElement(
-            'tfoot',
-            null,
-            React.createElement(
-              'tr',
-              { className: 'totals-row' },
-              React.createElement('td', { colSpan: 2 }, React.createElement('strong', null, 'TOTAL:')),
-              React.createElement('td', null, React.createElement('strong', null, totalUnits)),
-              React.createElement('td', null, React.createElement('strong', null, totalLec)),
-              React.createElement('td', null, React.createElement('strong', null, totalLab)),
-              React.createElement('td', { colSpan: 4 }, '')
-            )
-          )
-        )
-      ),
-
-      // Fees Section - COMPACT
-      React.createElement(
-        'div',
-        { className: 'fees-section compact' },
-        React.createElement(
-          'div',
-          { className: 'fees-grid compact' },
-          React.createElement(
-            'div',
-            { className: 'fee-column' },
-            React.createElement(
-              'div',
-              { className: 'fee-item' },
-              React.createElement('strong', null, 'Tuition Fee:'),
-              React.createElement('span', null, `₱${fees.tuition.toLocaleString()}`)
-            ),
-            React.createElement(
-              'div',
-              { className: 'fee-item' },
-              React.createElement('strong', null, 'Laboratory Fee:'),
-              React.createElement('span', null, `₱${fees.laboratory.toLocaleString()}`)
-            ),
-            React.createElement(
-              'div',
-              { className: 'fee-item' },
-              React.createElement('strong', null, 'Computer Fee:'),
-              React.createElement('span', null, `₱${fees.computer.toLocaleString()}`)
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'fee-column' },
-            React.createElement(
-              'div',
-              { className: 'fee-item' },
-              React.createElement('strong', null, 'Miscellaneous:'),
-              React.createElement('span', null, `₱${fees.misc.toLocaleString()}`)
-            ),
-            React.createElement(
-              'div',
-              { className: 'fee-item total' },
-              React.createElement('strong', null, 'TOTAL FEE:'),
-              React.createElement('span', null, `₱${totalFees.toLocaleString()}`)
-            )
-          )
-        )
-      ),
-
-      // Payment Section - COMPACT
-      React.createElement(
-        'div',
-        { className: 'payment-section' },
-        React.createElement(
-          'div',
-          { className: 'payment-grid' },
-          React.createElement(
-            'div',
-            { className: 'payment-item' },
-            React.createElement('strong', null, '1ST PAYMENT'),
-            React.createElement('div', { className: 'payment-details' },
-              'Amount Paid: ______ Date: ______'
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'payment-item' },
-            React.createElement('strong', null, '2ND PAYMENT'),
-            React.createElement('div', { className: 'payment-details' },
-              'Amount Paid: ______ Date: ______'
-            )
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'balance-section' },
-          React.createElement('strong', null, 'TOTAL BALANCE: ₱0.00')
-        )
-      ),
-
-      // Footer and Notes - COMPACT
-      React.createElement(
-        'div',
-        { className: 'cor-footer compact' },
-        React.createElement(
-          'div',
-          { className: 'official-note compact' },
-          React.createElement('p', null, 
-            '📝 This is an official document generated by PTC Student Portal. ' +
-            'Valid without signature.'
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'signature-section' },
-          React.createElement(
-            'div',
-            { className: 'student-signature' },
-            React.createElement('div', { className: 'signature-line' }),
-            React.createElement('p', null, 
-              studentData ? 
-                `${studentData.first_name} ${studentData.last_name}`.toUpperCase() :
-                'MARK CHRISTIAN MACASABUANG BAYLON'
-            ),
-            React.createElement('p', { className: 'label' }, "Student's Signature")
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'generated-info compact' },
-          React.createElement('p', null, 
-            `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
-          )
-        )
-      )
-    )
+        {/* Important Notes */}
+        <div className="important-notes">
+          <h4>Important Notes:</h4>
+          <ul>
+            <li>This document is an official record of your course registration</li>
+            <li>Keep this document for your records and for any official purposes</li>
+            <li>Changes to registration must be processed through the Registrar's Office</li>
+            <li>This COR is valid for the current semester only</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -24,3 +24,9 @@
 2025-11-06T11:45:35.901Z INFO: Frontend connection test | meta: {"body":{"test":"frontend connection","timestamp":"2025-11-06T11:45:35.900Z"}}
 2025-11-06T11:45:36.192Z INFO: Attempting send-confirmation email | meta: {"attempt":1,"to":"raijinplays3@gmail.com"}
 2025-11-06T11:45:38.264Z INFO: send-confirmation email sent | meta: {"to":"raijinplays3@gmail.com","messageId":"<55b528bb-c922-d45f-945b-a49df48dcc93@gmail.com>","attempt":1}
+2025-11-29T11:36:55.812Z INFO: 🚀 PTC Admission Email Server running on http://localhost:4001
+2025-11-29T11:36:55.813Z INFO: 📧 Using Gmail: baylonmark73@gmail.com
+2025-11-29T11:36:55.813Z INFO: 🏫 Sender Name: PTC Admission
+2025-11-29T11:36:58.849Z INFO: ✅ SMTP transporter verified and ready
+2025-11-29T11:40:29.242Z INFO: Attempting send-confirmation email | meta: {"attempt":1,"to":"agalindoyasmen@gmail.com"}
+2025-11-29T11:40:32.299Z INFO: send-confirmation email sent | meta: {"to":"agalindoyasmen@gmail.com","messageId":"<34f54568-e37f-fab9-74d9-006848f69d63@gmail.com>","attempt":1}
