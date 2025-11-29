@@ -1,142 +1,412 @@
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
 
-const supabaseUrl = 'https://avnmpvjocmnearcgrduq.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bm1wdmpvY21uZWFyY2dyZHVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MzQ2OTAsImV4cCI6MjA3NTQxMDY5MH0.i7NNK9WB_mzFj84Rjk5f5hq-i6g_-lYPeLjCHJiiw2Q';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const StudentManagement = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [students, setStudents] = useState([
+    {
+      id: 1,
+      studentNumber: '2022-8402',
+      name: 'Mark John Nillasca Cabusas',
+      email: 'mncabusas@paterostechnologicalcollege.edu.ph',
+      program: 'BSIT',
+      yearLevel: '4',
+      status: 'ACTIVE',
+      examStatus: 'PENDING' // NEW: Track exam status
+    },
+    {
+      id: 2,
+      studentNumber: 'jon123',
+      name: 'Jon Christopher Calamaan',
+      email: 'jcc@paterostechnologicalcollege.edu.ph',
+      program: 'BSIT',
+      yearLevel: '1',
+      status: 'ACTIVE',
+      examStatus: 'PASSED'
+    },
+    {
+      id: 3,
+      studentNumber: '1234567mark',
+      name: 'Mark Christian sdasd temo',
+      email: 'ppbaylon@paterostechnologicalcollege.edu.ph',
+      program: 'BSEBA',
+      yearLevel: '2',
+      status: 'ACTIVE',
+      examStatus: 'FAILED'
+    },
+    {
+      id: 4,
+      studentNumber: '123mm',
+      name: 'chris mar',
+      email: 'oobaylon@paterostechnologicalcollege.edu.ph',
+      program: 'BSIT',
+      yearLevel: '2',
+      status: 'ACTIVE',
+      examStatus: 'PENDING'
+    },
+    {
+      id: 5,
+      studentNumber: 'testingmark123',
+      name: 'mark mm ribay',
+      email: 'mibaylon@paterostechnologicalcollege.edu.ph',
+      program: 'BSIT',
+      yearLevel: '1',
+      status: 'ACTIVE',
+      examStatus: 'PASSED'
+    },
+    {
+      id: 6,
+      studentNumber: '123BSIT',
+      name: 'mark maki admin',
+      email: 'mmbaylon@paterostechnologicalcollege.edu.ph',
+      program: 'BSIT',
+      yearLevel: '1',
+      status: 'ACTIVE',
+      examStatus: 'FAILED'
+    },
+    {
+      id: 7,
+      studentNumber: '2024-00001',
+      name: 'Juan Dela Cruz',
+      email: 'juan.delacruz@paterostechnologicalcollege.edu.ph',
+      program: 'Computer Science',
+      yearLevel: '1st Year',
+      status: 'ACTIVE',
+      examStatus: 'PENDING'
+    }
+  ]);
 
-const ExamSection = () => {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [examDate, setExamDate] = useState('');
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    studentNumber: '',
+    name: '',
+    email: '',
+    program: '',
+    yearLevel: '',
+    status: 'ACTIVE',
+    examStatus: 'PENDING'
+  });
 
-  const getApplicationsByStatus = async (status) => {
-    const { data, error } = await supabase
-      .from('student_admissions')
-      .select('*')
-      .eq('status', status)
-      .order('submitted_at', { ascending: false });
-    if (error) throw error;
-    return data;
+  // Filter students based on search term
+  const filteredStudents = students.filter(student =>
+    student.studentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Handle Passed button
+  const handlePassed = (studentId) => {
+    const updatedStudents = students.map(student =>
+      student.id === studentId
+        ? { ...student, examStatus: 'PASSED' }
+        : student
+    );
+
+    setStudents(updatedStudents);
+    const student = students.find(s => s.id === studentId);
+    alert(`${student.name} has been marked as PASSED! 🎉`);
   };
 
-  const updateExamSchedule = async (id, examDate) => {
-    const { data, error } = await supabase
-      .from('student_admissions')
-      .update({ exam_schedule: examDate })
-      .eq('id', id)
-      .select();
-    if (error) throw error;
-    return data;
+  // Handle Failed button
+  const handleFailed = (studentId) => {
+    const updatedStudents = students.map(student =>
+      student.id === studentId
+        ? { ...student, examStatus: 'FAILED' }
+        : student
+    );
+
+    setStudents(updatedStudents);
+    const student = students.find(s => s.id === studentId);
+    alert(`${student.name} has been marked as FAILED. ❌`);
   };
 
-  const updateApplicationStatus = async (id, status) => {
-    const { data, error } = await supabase
-      .from('student_admissions')
-      .update({ status })
-      .eq('id', id)
-      .select();
-    if (error) throw error;
-    return data;
+  // Handle Edit button - open edit modal
+  const handleEdit = (student) => {
+    setEditingStudent(student);
+    setEditForm({
+      studentNumber: student.studentNumber,
+      name: student.name,
+      email: student.email,
+      program: student.program,
+      yearLevel: student.yearLevel,
+      status: student.status,
+      examStatus: student.examStatus
+    });
+    setShowEditModal(true);
   };
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-  const fetchApplications = async () => {
-    try {
-      setLoading(true);
-      const data = await getApplicationsByStatus('submitted');
-      setApplications(data || []);
-    } catch (error) {
-      console.error('Error fetching applications:', error);
-    } finally {
-      setLoading(false);
+  // Save edited student
+  const handleSaveEdit = () => {
+    if (!editingStudent) return;
+
+    const updatedStudents = students.map(student =>
+      student.id === editingStudent.id
+        ? { ...student, ...editForm }
+        : student
+    );
+
+    setStudents(updatedStudents);
+    setShowEditModal(false);
+    setEditingStudent(null);
+    alert('Student information updated successfully!');
+  };
+
+  // Delete student
+  const handleDelete = (studentId) => {
+    if (window.confirm('Are you sure you want to delete this student?')) {
+      const updatedStudents = students.filter(student => student.id !== studentId);
+      setStudents(updatedStudents);
+      alert('Student deleted successfully!');
     }
   };
 
-  const handleScheduleExam = async (applicationId) => {
-    if (!examDate) {
-      alert('Please select an exam date');
-      return;
-    }
-
-    try {
-      await updateExamSchedule(applicationId, examDate);
-      await updateApplicationStatus(applicationId, 'scheduled');
-      alert('Exam scheduled successfully!');
-      setSelectedApp(null);
-      setExamDate('');
-      fetchApplications();
-    } catch (error) {
-      console.error('Error scheduling exam:', error);
-      alert('Error scheduling exam');
-    }
+  // Add new student
+  const handleAddStudent = () => {
+    alert('Add Student functionality would open here!');
   };
 
-  if (loading) return <div>Loading applications...</div>;
+  // Get exam status badge style
+  const getExamStatusBadge = (examStatus) => {
+    switch (examStatus) {
+      case 'PASSED':
+        return styles.passedStatus;
+      case 'FAILED':
+        return styles.failedStatus;
+      case 'PENDING':
+        return styles.pendingStatus;
+      default:
+        return styles.pendingStatus;
+    }
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Schedule Exams</h2>
-      <div style={{ display: 'grid', gap: '15px', marginTop: '20px' }}>
-        {applications.map(app => (
-          <div key={app.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ flex: 1 }}>
-              <h3>{app.full_name}</h3>
-              <p>Email: {app.email}</p>
-              <p>Program: {app.desired_program}</p>
-              <p>Contact: {app.contact_number}</p>
-              {app.exam_schedule && (
-                <p><strong>Scheduled: {new Date(app.exam_schedule).toLocaleString()}</strong></p>
-              )}
-            </div>
-            <div style={{ marginLeft: '15px' }}>
-              <button 
-                onClick={() => {
-                  setSelectedApp(app);
-                  setExamDate(app.exam_schedule ? app.exam_schedule.slice(0, 16) : '');
-                }}
-                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#007bff', color: 'white', cursor: 'pointer' }}
-              >
-                {app.exam_schedule ? 'Reschedule Exam' : 'Schedule Exam'}
-              </button>
-            </div>
-          </div>
-        ))}
-        {applications.length === 0 && (
-          <p>No applications pending exam scheduling.</p>
-        )}
+    <div style={styles.container}>
+      {/* Header */}
+      <div style={styles.header}>
+        <div>
+          <h1 style={styles.title}>Student Management</h1>
+          <p style={styles.subtitle}>Search by Student ID, First Name, or Last Name</p>
+        </div>
+        <button 
+          onClick={handleAddStudent}
+          style={styles.addButton}
+        >
+          + Add New Student
+        </button>
       </div>
 
-      {selectedApp && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', minWidth: '400px' }}>
-            <h3>Schedule Exam for {selectedApp.full_name}</h3>
-            <div style={{ margin: '15px 0' }}>
-              <label>Exam Date and Time:</label>
+      {/* Search Section */}
+      <div style={styles.searchSection}>
+        <h3 style={styles.sectionTitle}>Search Student</h3>
+        <input
+          type="text"
+          placeholder="Search by Student ID, Name, or Email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={styles.searchInput}
+        />
+      </div>
+
+      {/* Students Table */}
+      <div style={styles.tableSection}>
+        <h3 style={styles.sectionTitle}>All Students</h3>
+        <div style={styles.tableContainer}>
+          <table style={styles.table}>
+            <thead>
+              <tr style={styles.tableHeader}>
+                <th style={styles.th}>Student Number</th>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Email</th>
+                <th style={styles.th}>Program</th>
+                <th style={styles.th}>Year Level</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Exam Status</th>
+                <th style={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student, index) => (
+                <tr key={student.id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                  <td style={styles.td}>
+                    <strong>{student.studentNumber}</strong>
+                  </td>
+                  <td style={styles.td}>{student.name}</td>
+                  <td style={styles.td}>{student.email}</td>
+                  <td style={styles.td}>{student.program}</td>
+                  <td style={styles.td}>{student.yearLevel}</td>
+                  <td style={styles.td}>
+                    <span style={
+                      student.status === 'ACTIVE' ? styles.activeStatus : styles.inactiveStatus
+                    }>
+                      {student.status}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={getExamStatusBadge(student.examStatus)}>
+                      {student.examStatus}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    <div style={styles.actionButtons}>
+                      <button
+                        onClick={() => handlePassed(student.id)}
+                        style={styles.passedButton}
+                        title="Mark as Passed"
+                      >
+                        Passed
+                      </button>
+                      <button
+                        onClick={() => handleFailed(student.id)}
+                        style={styles.failedButton}
+                        title="Mark as Failed"
+                      >
+                        Failed
+                      </button>
+                      <button
+                        onClick={() => handleEdit(student)}
+                        style={styles.editButton}
+                        title="Edit Student"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(student.id)}
+                        style={styles.deleteButton}
+                        title="Delete Student"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Results Count */}
+      <div style={styles.resultsCount}>
+        Showing {filteredStudents.length} of {students.length} students
+      </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3 style={styles.modalTitle}>Edit Student Information</h3>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Student Number:</label>
               <input
-                type="datetime-local"
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                type="text"
+                name="studentNumber"
+                value={editForm.studentNumber}
+                onChange={handleInputChange}
+                style={styles.input}
               />
             </div>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button 
-                onClick={() => handleScheduleExam(selectedApp.id)}
-                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#28a745', color: 'white', cursor: 'pointer' }}
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Full Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={editForm.name}
+                onChange={handleInputChange}
+                style={styles.input}
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={editForm.email}
+                onChange={handleInputChange}
+                style={styles.input}
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Program:</label>
+              <select
+                name="program"
+                value={editForm.program}
+                onChange={handleInputChange}
+                style={styles.input}
               >
-                Confirm Schedule
+                <option value="BSIT">BSIT</option>
+                <option value="BSEBA">BSEBA</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="BSED">BSED</option>
+                <option value="BSCS">BSCS</option>
+              </select>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Year Level:</label>
+              <select
+                name="yearLevel"
+                value={editForm.yearLevel}
+                onChange={handleInputChange}
+                style={styles.input}
+              >
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+                <option value="1st Year">1st Year (Text)</option>
+              </select>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Status:</label>
+              <select
+                name="status"
+                value={editForm.status}
+                onChange={handleInputChange}
+                style={styles.input}
+              >
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+              </select>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Exam Status:</label>
+              <select
+                name="examStatus"
+                value={editForm.examStatus}
+                onChange={handleInputChange}
+                style={styles.input}
+              >
+                <option value="PENDING">PENDING</option>
+                <option value="PASSED">PASSED</option>
+                <option value="FAILED">FAILED</option>
+              </select>
+            </div>
+
+            <div style={styles.modalActions}>
+              <button
+                onClick={handleSaveEdit}
+                style={styles.saveButton}
+              >
+                Save Changes
               </button>
-              <button 
-                onClick={() => {
-                  setSelectedApp(null);
-                  setExamDate('');
-                }}
-                style={{ padding: '8px 16px', border: 'none', borderRadius: '4px', background: '#6c757d', color: 'white', cursor: 'pointer' }}
+              <button
+                onClick={() => setShowEditModal(false)}
+                style={styles.cancelButton}
               >
                 Cancel
               </button>
@@ -148,4 +418,261 @@ const ExamSection = () => {
   );
 };
 
-export default ExamSection;
+const styles = {
+  container: {
+    padding: '20px',
+    backgroundColor: '#f8fafc',
+    minHeight: '100vh',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  },
+  header: {
+    marginBottom: '30px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: '16px'
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: '600',
+    color: '#1f2937',
+    margin: '0 0 8px 0'
+  },
+  subtitle: {
+    fontSize: '16px',
+    color: '#6b7280',
+    margin: '0'
+  },
+  addButton: {
+    backgroundColor: '#10b981',
+    color: 'white',
+    border: 'none',
+    padding: '10px 16px',
+    borderRadius: '6px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    fontSize: '14px'
+  },
+  searchSection: {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    marginBottom: '20px'
+  },
+  sectionTitle: {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#374151',
+    margin: '0 0 16px 0'
+  },
+  searchInput: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    fontSize: '14px',
+    outline: 'none'
+  },
+  tableSection: {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+  },
+  tableContainer: {
+    overflowX: 'auto'
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    fontSize: '14px'
+  },
+  tableHeader: {
+    backgroundColor: '#f9fafb',
+    borderBottom: '2px solid #e5e7eb'
+  },
+  th: {
+    padding: '12px 16px',
+    textAlign: 'left',
+    fontWeight: '600',
+    color: '#374151',
+    borderBottom: '1px solid #e5e7eb'
+  },
+  td: {
+    padding: '12px 16px',
+    borderBottom: '1px solid #f3f4f6'
+  },
+  evenRow: {
+    backgroundColor: '#fafafa'
+  },
+  oddRow: {
+    backgroundColor: 'white'
+  },
+  activeStatus: {
+    color: '#10b981',
+    fontWeight: '500',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: '#d1fae5',
+    fontSize: '12px'
+  },
+  inactiveStatus: {
+    color: '#ef4444',
+    fontWeight: '500',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: '#fee2e2',
+    fontSize: '12px'
+  },
+  passedStatus: {
+    color: '#10b981',
+    fontWeight: '500',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: '#d1fae5',
+    fontSize: '12px'
+  },
+  failedStatus: {
+    color: '#ef4444',
+    fontWeight: '500',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: '#fee2e2',
+    fontSize: '12px'
+  },
+  pendingStatus: {
+    color: '#f59e0b',
+    fontWeight: '500',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: '#fef3c7',
+    fontSize: '12px'
+  },
+  actionButtons: {
+    display: 'flex',
+    gap: '4px',
+    flexWrap: 'wrap'
+  },
+  passedButton: {
+    backgroundColor: '#10b981',
+    color: 'white',
+    border: 'none',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    minWidth: '50px'
+  },
+  failedButton: {
+    backgroundColor: '#ef4444',
+    color: 'white',
+    border: 'none',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    minWidth: '50px'
+  },
+  editButton: {
+    backgroundColor: '#3b82f6',
+    color: 'white',
+    border: 'none',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    minWidth: '40px'
+  },
+  deleteButton: {
+    backgroundColor: '#6b7280',
+    color: 'white',
+    border: 'none',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    minWidth: '50px'
+  },
+  resultsCount: {
+    textAlign: 'center',
+    color: '#6b7280',
+    fontSize: '14px',
+    marginTop: '16px',
+    padding: '8px'
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000
+  },
+  modal: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '24px',
+    width: '90%',
+    maxWidth: '500px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  },
+  modalTitle: {
+    fontSize: '20px',
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: '20px'
+  },
+  formGroup: {
+    marginBottom: '16px'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '6px',
+    fontWeight: '500',
+    color: '#374151'
+  },
+  input: {
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: '4px',
+    fontSize: '14px'
+  },
+  modalActions: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'flex-end',
+    marginTop: '24px'
+  },
+  saveButton: {
+    backgroundColor: '#10b981',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '4px',
+    fontWeight: '500',
+    cursor: 'pointer'
+  },
+  cancelButton: {
+    backgroundColor: '#6b7280',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '4px',
+    fontWeight: '500',
+    cursor: 'pointer'
+  }
+};
+
+export default StudentManagement;

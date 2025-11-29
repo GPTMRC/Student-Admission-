@@ -428,7 +428,7 @@ const AdminDashboard = ({ onLogout }) => {
     { id: 'studentAdvising', label: 'Student Advising', icon: '🎓' },
     { id: 'subjects', label: 'Subjects', icon: '📚' },
     { id: 'exams', label: 'Exams', icon: '✓' },
-    { id: 'reports', label: 'Reports', icon: '📉' },
+   
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 
