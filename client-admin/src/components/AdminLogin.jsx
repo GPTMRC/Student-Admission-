@@ -35,22 +35,16 @@ const AdminLogin = ({ onLoginSuccess }) => {
         .single();
 
       if (adminError) {
-        if (adminError.code === 'PGRST116') {
-          throw new Error('Invalid email or password');
-        }
+        if (adminError.code === 'PGRST116') throw new Error('Invalid email or password');
         throw adminError;
       }
 
-      if (!adminRow) {
-        throw new Error('Invalid email or password');
-      }
+      if (!adminRow) throw new Error('Invalid email or password');
 
       const user = {
         id: adminRow.id,
         email: adminRow.email,
-        user_metadata: {
-          full_name: adminRow.full_name
-        }
+        user_metadata: { full_name: adminRow.full_name }
       };
 
       const admin = {
@@ -69,11 +63,6 @@ const AdminLogin = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleDemoLogin = () => {
-    setLoginData({ email: 'admin@ptc.edu.ph', password: 'demo123' });
-    setError('');
-  };
-
   const handleShowRegistration = () => {
     setShowRegistration(true);
     setError('');
@@ -88,10 +77,9 @@ const AdminLogin = ({ onLoginSuccess }) => {
     onLoginSuccess && onLoginSuccess(userData);
   };
 
-  // Show registration component if needed
   if (showRegistration) {
     return (
-      <AdminRegistration 
+      <AdminRegistration
         onRegistrationSuccess={handleRegistrationSuccess}
         onSwitchToLogin={handleHideRegistration}
       />
@@ -102,7 +90,6 @@ const AdminLogin = ({ onLoginSuccess }) => {
     <div className="admin-login-container">
       <div className="admin-login-content">
         <div className="admin-login-card">
-          {/* Logo Slot */}
           <div className="admin-logo-slot">
             <img src="logo-ptc.png" alt="PTC Logo" className="admin-logo-image" />
           </div>
@@ -114,7 +101,14 @@ const AdminLogin = ({ onLoginSuccess }) => {
 
           <form onSubmit={handleLogin} className="admin-login-form" noValidate>
             {error && (
-              <div className={`admin-error-message ${error.includes('already exists') || error.includes('successfully') ? 'admin-success-message' : ''}`} role="alert">
+              <div
+                className={`admin-error-message ${
+                  error.includes('already exists') || error.includes('successfully')
+                    ? 'admin-success-message'
+                    : ''
+                }`}
+                role="alert"
+              >
                 {error}
               </div>
             )}
@@ -156,30 +150,22 @@ const AdminLogin = ({ onLoginSuccess }) => {
               )}
             </button>
 
-            <div className="admin-button-group">
-              <button 
-                type="button" 
-                onClick={handleDemoLogin} 
-                disabled={loading}
-                className="admin-demo-button"
-              >
-                Use Demo Credentials
-              </button>
+            {/* Removed Demo Credentials Button */}
 
-              <button 
-                type="button" 
-                onClick={handleShowRegistration} 
-                disabled={loading}
-                className="admin-create-button"
-              >
-                Create Admin Account
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleShowRegistration}
+              disabled={loading}
+              className="admin-create-button"
+            >
+              Create Admin Account
+            </button>
           </form>
 
           <div className="admin-login-footer">
             <p className="admin-footer-text">
-              <strong>New to PTC Portal?</strong> First time users can create their admin account to access the dashboard and institutional services.
+              <strong>New to PTC Portal?</strong> First-time users can create their admin account to
+              access the dashboard and institutional services.
             </p>
           </div>
         </div>

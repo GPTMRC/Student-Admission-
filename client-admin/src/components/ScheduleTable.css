@@ -1,0 +1,516 @@
+/* ScheduleTable.css - Professional Dashboard */
+
+.schedule-table-container {
+  padding: 0;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-content h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.header-content p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+.btn-primary:hover {
+  background: #374151;
+  border-color: #374151;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 32px;
+}
+
+.stat-card {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.stat-icon {
+  color: #6b7280;
+  opacity: 0.8;
+}
+
+/* Controls Section */
+.controls-section {
+  padding: 0 32px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.search-control {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+.filter-select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  min-width: 140px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+/* Table Container */
+.table-container {
+  padding: 0 32px 32px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.table-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.table-summary {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.table-wrapper {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+/* Table Styles */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.schedule-table th {
+  background: #f9fafb;
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.schedule-table td {
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+
+.schedule-row:hover {
+  background: #f9fafb;
+}
+
+.schedule-row:last-child td {
+  border-bottom: none;
+}
+
+/* Cell Styles */
+.student-cell .student-name {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.student-cell .student-id {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.student-cell .student-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.appointment-cell .appointment-date {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.appointment-cell .appointment-time {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.document-cell .document-purpose {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.program-cell .program-name {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.program-cell .program-year {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.contact-cell .contact-phone {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.contact-cell .contact-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.status-pending {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.status-approved {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.status-completed {
+  background: #faf5ff;
+  color: #5b21b6;
+}
+
+.status-cancelled {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Document Badges */
+.doc-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.doc-cor {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.doc-cog {
+  background: #ecfeff;
+  color: #0e7490;
+}
+
+.doc-tor {
+  background: #faf5ff;
+  color: #7e22ce;
+}
+
+/* Empty State */
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.empty-state svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h4 {
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #111827;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .dashboard-header {
+    padding: 20px 24px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .stats-grid {
+    padding: 24px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .controls-section {
+    padding: 0 24px 20px;
+  }
+  
+  .table-container {
+    padding: 0 24px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-control {
+    max-width: none;
+  }
+  
+  .schedule-table {
+    font-size: 13px;
+  }
+  
+  .schedule-table th,
+  .schedule-table td {
+    padding: 12px 16px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    padding: 16px 20px;
+  }
+  
+  .header-content h1 {
+    font-size: 24px;
+  }
+  
+  .stats-grid {
+    padding: 20px;
+    gap: 16px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
+  }
+  
+  .controls-section,
+  .table-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}

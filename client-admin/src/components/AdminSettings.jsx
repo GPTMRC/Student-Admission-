@@ -5,10 +5,7 @@ import './AdminSettings.css';
 const AdminSettings = () => {
   const [profileData, setProfileData] = useState({
     name: 'Admin User',
-    email: 'admin@ptc.edu',
-    phone: '',
-    department: 'Administration',
-    position: 'System Administrator'
+    email: 'admin@ptc.edu'
   });
   const [changePasswordData, setChangePasswordData] = useState({
     currentPassword: '',
@@ -167,40 +164,6 @@ const AdminSettings = () => {
                   className={!isEditingProfile ? 'disabled' : ''}
                 />
               </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input
-                  type="tel"
-                  value={profileData.phone}
-                  onChange={(e) => handleProfileChange('phone', e.target.value)}
-                  disabled={!isEditingProfile}
-                  className={!isEditingProfile ? 'disabled' : ''}
-                />
-              </div>
-              <div className="form-group">
-                <label>Department</label>
-                <input
-                  type="text"
-                  value={profileData.department}
-                  onChange={(e) => handleProfileChange('department', e.target.value)}
-                  disabled={!isEditingProfile}
-                  className={!isEditingProfile ? 'disabled' : ''}
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Position</label>
-              <input
-                type="text"
-                value={profileData.position}
-                onChange={(e) => handleProfileChange('position', e.target.value)}
-                disabled={!isEditingProfile}
-                className={!isEditingProfile ? 'disabled' : ''}
-              />
             </div>
           </div>
         </div>

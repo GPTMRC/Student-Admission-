@@ -5,6 +5,7 @@ import StudentAdvisingPage from './StudentAdvisingPage';
 import SubjectsPage from './SubjectsPage';
 import ExamSection from './ExamSection.jsx';
 import AdminSettings from './AdminSettings';
+import ScheduleTable from './ScheduleTable';
 
 const AdminDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
@@ -421,14 +422,14 @@ const AdminDashboard = ({ onLogout }) => {
     return days;
   };
 
-  // ✅ FIXED NAVIGATION ITEMS - Updated to include Settings
+  // ✅ UPDATED NAVIGATION ITEMS - Added Schedule Table
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'applications', label: 'Applications', icon: '📰' },
     { id: 'studentAdvising', label: 'Student Advising', icon: '🎓' },
     { id: 'subjects', label: 'Subjects', icon: '📚' },
+    { id: 'schedule', label: 'Schedule Table', icon: '📅' },
     { id: 'exams', label: 'Exams', icon: '✓' },
-   
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 
@@ -521,7 +522,7 @@ const AdminDashboard = ({ onLogout }) => {
               </h1>
             </div>
             <div className="admin-info">
-              <div className="admin-welcome">Welcome, Admin</div>
+              <div className="admin-welcome"></div>
               <div className="admin-avatar">A</div>
             </div>
           </div>
@@ -901,6 +902,9 @@ const AdminDashboard = ({ onLogout }) => {
             </>
           )}
 
+          {/* SCHEDULE TABLE SECTION */}
+          {activeSection === 'schedule' && <ScheduleTable />}
+
           {/* SUBJECTS MASTERLIST SECTION */}
           {activeSection === 'subjects' && <SubjectsPage />}
 
@@ -919,7 +923,8 @@ const AdminDashboard = ({ onLogout }) => {
             activeSection !== 'subjects' &&
             activeSection !== 'studentAdvising' &&
             activeSection !== 'exams' &&
-            activeSection !== 'settings' && (
+            activeSection !== 'settings' &&
+            activeSection !== 'schedule' && (
               <div className="section-placeholder">
                 <div className="placeholder-icon">
                   {
